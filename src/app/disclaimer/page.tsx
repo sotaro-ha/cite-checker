@@ -20,6 +20,9 @@ export default function DisclaimerPage() {
                             本サービスは、CrossrefおよびOpenAlexのAPIを利用して引用文献の検証を行いますが、その正確性や完全性を保証するものではありません。
                             検索結果はあくまで参考情報としてご利用いただき、最終的な確認は必ずご自身で行ってください。
                         </p>
+                        <p className="text-muted-foreground leading-relaxed">
+                            本サイトでは、サーバー維持費を賄うために広告を掲載しています。
+                        </p>
                     </div>
 
                     <div className="space-y-6">
@@ -30,6 +33,9 @@ export default function DisclaimerPage() {
                         <p className="text-muted-foreground leading-relaxed">
                             This service uses Crossref and OpenAlex APIs to verify citations, but does not guarantee the accuracy or completeness of the results.
                             Please use the search results for reference purposes only and ensure to perform the final verification yourself.
+                        </p>
+                        <p className="text-muted-foreground leading-relaxed">
+                            This site displays advertisements to cover server maintenance costs.
                         </p>
                     </div>
                 </section>
