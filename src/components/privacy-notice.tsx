@@ -30,7 +30,7 @@ export function PrivacyNotice() {
                     <p className="text-xs text-blue-700 mt-1 leading-relaxed">
                         PDFファイルの解析はすべてお使いのブラウザ内で行われます。
                         論文本文がサーバーに送信されることはありません。
-                        サーバーに送信されるのは、抽出された引用文献情報のみです。
+                        サーバーに送信されるのは、grobidによる引用の解析を経て抽出された引用文献情報のみです。
                         査読前の論文も安心してご利用いただけます。
                     </p>
                 </div>

@@ -18,7 +18,7 @@ export const translations = {
         status: "状態",
         original: "抽出データ",
         metadata: "検索結果",
-        privacy: "プライバシーについて：PDFの解析はブラウザ上で行われ、外部サーバへは送信されません。検索のために抽出された引用文献テキストのみがCrossrefおよびOpenAlexに送信されます。査読前の論文でも安心してご利用いただけます。",
+        privacy: "プライバシーについて：PDFの解析はブラウザ上で行われ、外部サーバへは送信されません。検索のために、grobidによる引用の解析を経て抽出された引用文献テキストのみがCrossrefおよびOpenAlexに送信されます。査読前の論文でも安心してご利用いただけます。",
         sourceWait: "待機中...",
         sourceNotFound: "見つかりません",
         confLow: "信頼度低",

@@ -152,7 +152,7 @@ export default function Home({ params }: { params: Promise<{ lang: string }> }) 
       (async () => {
         const BATCH_SIZE = 5;
         try {
-          toast.info(lang === "ja" ? "バックグラウンドでGrobid解析中..." : "Enriching with Grobid in background...", { duration: 3000 });
+          // toast.info(lang === "ja" ? "バックグラウンドでGrobid解析中..." : "Enriching with Grobid in background...", { duration: 3000 });
 
           for (let i = 0; i < extracted.length; i += BATCH_SIZE) {
             const batchSlice = extracted.slice(i, i + BATCH_SIZE);
