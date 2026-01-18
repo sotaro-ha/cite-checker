@@ -2,18 +2,12 @@ import Link from "next/link";
 import { Language } from "@/lib/i18n";
 import { use } from "react";
 
-export default function DisclaimerPage({ params }: { params: Promise<{ lang: Language }> }) {
-    const { lang } = use(params);
+export default function DisclaimerPage({ params }: { params: Promise<{ lang: string }> }) {
+    const { lang } = use(params) as { lang: Language };
 
     return (
         <main className="min-h-screen bg-white text-slate-800 font-sans selection:bg-[#DA7756]/20 py-12 px-6">
             <div className="max-w-2xl mx-auto space-y-8">
-                <header className="border-b border-[#E5E2DD] pb-6">
-                    <Link href={`/${lang}`} className="text-xl font-sans font-bold tracking-tight text-[#1A1A1A] hover:opacity-80 transition-opacity">
-                        Cite Checker
-                    </Link>
-                </header>
-
                 <section className="space-y-6">
                     {lang === 'ja' ? (
                         <div className="space-y-6">
@@ -44,12 +38,6 @@ export default function DisclaimerPage({ params }: { params: Promise<{ lang: Lan
                             </p>
                         </div>
                     )}
-                </section>
-
-                <section className="pt-8 border-t border-[#E5E2DD]">
-                    <Link href={`/${lang}`} className="text-sm text-[#DA7756] hover:underline hover:text-[#DA7756]/80 transition-colors">
-                        {lang === 'ja' ? "← トップページに戻る" : "← Back to Home"}
-                    </Link>
                 </section>
             </div>
         </main>

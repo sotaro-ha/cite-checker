@@ -29,7 +29,11 @@ export const translations = {
         labelAuthors: "AUTHORS",
         labelVenue: "VENUE",
         labelYear: "YEAR",
-        labelDOI: "DOI"
+        labelDOI: "DOI",
+        heroBullet1: "完全ローカル処理: PDFはブラウザで処理されます",
+        heroBullet2: "AIを使わない検証",
+        heroBullet3: "PDFを上げるだけで検証",
+        disclaimerLink: "免責事項はこちら"
     },
     en: {
         title: "Cite Checker",
@@ -59,6 +63,10 @@ export const translations = {
         labelAuthors: "AUTHORS",
         labelVenue: "VENUE",
         labelYear: "YEAR",
-        labelDOI: "DOI"
+        labelDOI: "DOI",
+        heroBullet1: "Local Processing: PDFs processed in browser",
+        heroBullet2: "No AI verification",
+        heroBullet3: "Just upload PDF to verify",
+        disclaimerLink: "Disclaimer here"
     }
 };
