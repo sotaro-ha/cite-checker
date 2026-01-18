@@ -7,7 +7,14 @@ import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { motion, AnimatePresence } from "motion/react";
-import { CheckCircle2, AlertTriangle, ExternalLink, CornerDownRight, HelpCircle, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
+import { CheckCircle2, AlertTriangle, ExternalLink, CornerDownRight, HelpCircle, ArrowUpDown, ArrowUp, ArrowDown, Download, FileText } from "lucide-react";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { generateCSV, generateTXT, generateBibTeX } from "@/lib/export";
 import { Language, translations } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 
@@ -94,6 +101,37 @@ export function CitationCardList({ citations, results, detectedStyle, lang }: Ci
         return lang === "ja" ? "元の順序" : "Original";
     };
 
+    const handleExport = (format: "csv" | "txt" | "bib") => {
+        let content = "";
+        let mimeType = "text/plain";
+        let extension = "txt";
+
+        switch (format) {
+            case "csv":
+                content = generateCSV(citations, results);
+                mimeType = "text/csv;charset=utf-8;";
+                extension = "csv";
+                break;
+            case "txt":
+                content = generateTXT(citations, results);
+                extension = "txt";
+                break;
+            case "bib":
+                content = generateBibTeX(citations, results);
+                extension = "bib";
+                break;
+        }
+
+        const blob = new Blob([content], { type: mimeType });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `citations_verified.${extension}`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+
     return (
         <div className="space-y-8">
             <div className="flex items-center justify-between px-2">
@@ -110,13 +148,38 @@ export function CitationCardList({ citations, results, detectedStyle, lang }: Ci
                         {found} {t.matched} / {searched} {t.searched} / {total} Total
                     </p>
                 </div>
-                <button
-                    onClick={cycleSortMode}
-                    className="flex items-center gap-2 px-3 py-1.5 text-xs text-muted-foreground hover:text-foreground border border-gray-200 rounded-md hover:bg-gray-50 transition-colors"
-                >
-                    {getSortIcon()}
-                    <span>{lang === "ja" ? "マッチ度" : "Match"}: {getSortLabel()}</span>
-                </button>
+                <div className="flex items-center gap-2">
+                    <button
+                        onClick={cycleSortMode}
+                        className="flex items-center gap-2 px-3 py-1.5 text-xs text-muted-foreground hover:text-foreground border border-gray-200 rounded-md hover:bg-gray-50 transition-colors"
+                    >
+                        {getSortIcon()}
+                        <span>{lang === "ja" ? "マッチ度" : "Match"}: {getSortLabel()}</span>
+                    </button>
+
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <button className="flex items-center gap-2 px-3 py-1.5 text-xs text-muted-foreground hover:text-foreground border border-gray-200 rounded-md hover:bg-gray-50 transition-colors">
+                                <Download size={14} />
+                                <span>{lang === "ja" ? "エクスポート" : "Export"}</span>
+                            </button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                            <DropdownMenuItem onClick={() => handleExport("csv")}>
+                                <FileText className="mr-2 h-4 w-4" />
+                                <span>CSV</span>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => handleExport("txt")}>
+                                <FileText className="mr-2 h-4 w-4" />
+                                <span>Text (TXT)</span>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => handleExport("bib")}>
+                                <div className="mr-2 h-4 w-4 font-mono text-[10px] flex items-center justify-center border rounded">Bx</div>
+                                <span>BibTeX</span>
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                </div>
             </div>
 
             <div className="grid grid-cols-1 gap-6">

@@ -3,7 +3,7 @@ export type Language = "ja" | "en";
 export const translations = {
     ja: {
         title: "Cite Checker",
-        subtitle: "引用の信頼性を確かめる",
+        subtitle: "引用の信頼性を安全に確かめる",
         description: "PDFをアップロードして、引用文献を自動検証",
         dragDrop: "PDFをドラッグ＆ドロップ",
         orClick: "またはクリックして選択",
@@ -31,14 +31,14 @@ export const translations = {
         labelYear: "YEAR",
         labelDOI: "DOI",
         heroBullet1: "完全ローカル処理: PDFはブラウザで処理されます",
-        heroBullet2: "AIを使わない検証",
+        heroBullet2: "LLMを使わない検証",
         heroBullet3: "PDFを上げるだけで検証",
         disclaimerLink: "免責事項はこちら"
     },
     en: {
         title: "Cite Checker",
         subtitle: "Verify Citation Reliability",
-        description: "Upload PDF to verify citations automatically",
+        description: "Upload PDF to verify citations automatically and safely",
         dragDrop: "Drag & Drop PDF here",
         orClick: "or click to select",
         analyzing: "Analyzing...",
@@ -65,7 +65,7 @@ export const translations = {
         labelYear: "YEAR",
         labelDOI: "DOI",
         heroBullet1: "Local Processing: PDFs processed in browser",
-        heroBullet2: "No AI verification",
+        heroBullet2: "No LLM verification",
         heroBullet3: "Just upload PDF to verify",
         disclaimerLink: "Disclaimer here"
     }
