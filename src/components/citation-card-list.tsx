@@ -207,12 +207,17 @@ export function CitationCardList({ citations, results, detectedStyle, lang }: Ci
                                                     {t.labelTitle}
                                                 </div>
                                                 <div className="pl-0 space-y-2">
-                                                    <p className="font-serif text-lg text-foreground/90 leading-snug">
-                                                        {citation.title || <span className="italic text-muted-foreground">(No Title Detected)</span>}
+                                                    <p className="font-serif text-lg text-foreground/90 leading-snug break-words">
+                                                        {citation.title || (
+                                                            <span className="text-muted-foreground/80 font-mono text-sm">
+                                                                {citation.raw}
+                                                            </span>
+                                                        )}
                                                     </p>
 
+                                                    {/* Show detected paper info */}
                                                     {result?.paper && (
-                                                        <div className="relative pl-5 animate-in fade-in slide-in-from-left-2">
+                                                        <div className="relative pl-5 mt-2 animate-in fade-in slide-in-from-left-2">
                                                             <div className="absolute left-0 top-1.5 text-[#DA7756]">
                                                                 <CornerDownRight size={14} />
                                                             </div>
@@ -222,7 +227,7 @@ export function CitationCardList({ citations, results, detectedStyle, lang }: Ci
                                                                 rel="noopener noreferrer"
                                                                 className="text-sm font-medium text-[#DA7756] hover:underline hover:text-[#B95E3F] leading-snug flex items-start gap-1 transition-colors block"
                                                             >
-                                                                {result.paper.title}
+                                                                {result.paper.title} (Detected)
                                                                 <ExternalLink size={10} className="mt-1 opacity-50 flex-shrink-0" />
                                                             </a>
                                                         </div>
@@ -239,7 +244,7 @@ export function CitationCardList({ citations, results, detectedStyle, lang }: Ci
                                                     <p className="text-sm text-foreground/80 leading-relaxed">
                                                         {citation.authors || "-"}
                                                     </p>
-                                                    {result?.paper?.authors && result.paper.authors.length > 0 && (
+                                                    {citation.authors && result?.paper?.authors && result.paper.authors.length > 0 && (
                                                         <div className="relative pl-5 animate-in fade-in slide-in-from-left-2">
                                                             <div className="absolute left-0 top-1 text-muted-foreground/40">
                                                                 <CornerDownRight size={12} />
@@ -261,7 +266,7 @@ export function CitationCardList({ citations, results, detectedStyle, lang }: Ci
                                                     <p className="text-sm text-foreground/80 leading-relaxed">
                                                         {citation.venue || "-"}
                                                     </p>
-                                                    {result?.paper?.venue && (
+                                                    {citation.venue && result?.paper?.venue && (
                                                         <div className="relative pl-5 animate-in fade-in slide-in-from-left-2">
                                                             <div className="absolute left-0 top-1 text-muted-foreground/40">
                                                                 <CornerDownRight size={12} />

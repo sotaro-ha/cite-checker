@@ -145,11 +145,79 @@ export default function Home({ params }: { params: Promise<{ lang: string }> }) 
         return;
       }
 
+
       setCitations(extracted);
+
+      // Start Progressive Enrichment (Non-blocking)
+      (async () => {
+        const BATCH_SIZE = 5;
+        try {
+          toast.info(lang === "ja" ? "バックグラウンドでGrobid解析中..." : "Enriching with Grobid in background...", { duration: 3000 });
+
+          for (let i = 0; i < extracted.length; i += BATCH_SIZE) {
+            const batchSlice = extracted.slice(i, i + BATCH_SIZE);
+            const rawBatch = batchSlice.map(c => c.raw);
+
+            try {
+              const response = await fetch("/api/grobid", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ citations: rawBatch }),
+              });
+
+              if (response.ok) {
+                const data = await response.json();
+                const grobidResults = data.results;
+
+                setCitations(prevCitations => {
+                  const nextCitations = [...prevCitations];
+                  const enrichedBatch: Citation[] = [];
+
+                  batchSlice.forEach((c, idx) => {
+                    const g = grobidResults[idx];
+                    if (g) {
+                      const globalIndex = i + idx;
+                      if (nextCitations[globalIndex]) {
+                        nextCitations[globalIndex] = {
+                          ...nextCitations[globalIndex],
+                          title: g.title || nextCitations[globalIndex].title,
+                          authors: g.authors || nextCitations[globalIndex].authors,
+                          venue: g.venue || nextCitations[globalIndex].venue,
+                          year: g.year || nextCitations[globalIndex].year,
+                          isGrobidEnriched: true,
+                        };
+                        enrichedBatch.push(nextCitations[globalIndex]);
+                      }
+                    } else {
+                      enrichedBatch.push(c);
+                    }
+                  });
+
+                  // Search these new enriched citations
+                  startProgressiveSearch(enrichedBatch);
+
+                  return nextCitations;
+                });
+
+              } else {
+                console.error("Grobid batch failed");
+                startProgressiveSearch(batchSlice); // Fallback search
+              }
+            } catch (e) {
+              console.error("Grobid batch error", e);
+              startProgressiveSearch(batchSlice); // Fallback search
+            }
+
+            // Small delay to be polite
+            await new Promise(r => setTimeout(r, 200));
+          }
+        } catch (err) {
+          console.error("Grobid enrichment process error", err);
+        }
+      })();
+
       setIsProcessing(false);
       setLastUploaded({ name: file.name, size: file.size });
-      startProgressiveSearch(extracted);
-
 
     } catch (err) {
       console.error(err);

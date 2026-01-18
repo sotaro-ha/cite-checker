@@ -346,32 +346,81 @@ export function extractCitations(text: string): Citation[] {
   else if (useDot) detectedStyle = "Numbered (n.)";
   else if (isUnnumbered) detectedStyle = "APA / Chicago (Author-Year)";
 
-  console.log(`📊 Extracted ${rawCitations.length} citations. Style: ${detectedStyle}`);
+  // console.log(`📊 Extracted ${rawCitations.length} citations. Style: ${detectedStyle}`);
 
   return rawCitations.map((item, index) => {
-    const c = parseCitation(String(index + 1), item.raw);
+    // Pass detected style to parser
+    const c = parseCitation(String(index + 1), item.raw, detectedStyle);
     c.style = detectedStyle;
     return c;
   });
 }
 
-function parseCitation(id: string, raw: string): Citation {
+function parseCitation(id: string, raw: string, style?: string): Citation {
   const yearMatch = raw.match(/\b(19\d{2}|20\d{2})\b/);
   const year = yearMatch ? yearMatch[1] : null;
 
   let title: string | null = null;
   let venue: string | null = null;
+  let authors: string | null = null;
 
-  const quotedTitle = raw.match(/["「『]([^"」』]+)["」』]/);
-  if (quotedTitle) title = quotedTitle[1].trim();
+  // 0. Quoted Title Strategy (Highest Integrity)
+  const quotedTitle = raw.match(/["“「『]([^"”」』]+)["”」』]/);
+  if (quotedTitle) {
+    title = quotedTitle[1].trim();
+    // If we found a quoted title, authors are likely before it
+    const titleIndex = raw.indexOf(quotedTitle[0]);
+    if (titleIndex > 0) {
+      authors = raw.substring(0, titleIndex).trim().replace(/[.,:]+$/, "");
+    }
+  }
 
+  // 1. Style-Based Strategy: IEEE / Numbered
+  // Typical Format: [1] Authors. Title. Venue, Year.
+  if (!title && (!style || style.includes("Numbered") || style.includes("IEEE"))) {
+    // Split by " . " or ". " but ignore initials like "A. "
+    // Lookbehind (?<!\b[A-Z]) ensures we don't split at "P. Smith"
+    // Lookbehind (?<!\bet al) ensures we don't split at "et al."
+    const parts = raw.split(/(?<!\b(?:[A-Z]|et al|Inc|Ltd))\.\s+/);
+
+    if (parts.length >= 2) {
+      // Part 0 is likely Authors
+      const p0 = parts[0].trim();
+      // Part 1 is likely Title
+      const p1 = parts[1].trim();
+
+      // Validation: Authors shouldn't be too long or look like a title
+      // Validation: Title shouldn't start with "In", "Vol", "doi:", "http"
+      const isValidTitle = (t: string) => {
+        return t.length > 5 &&
+          !/^(In|Proc|Journal|Vol|doi|http|arXiv)/i.test(t) &&
+          !/^\d{4}/.test(t); // Not just a year
+      };
+
+      if (isValidTitle(p1)) {
+        authors = p0;
+        title = p1;
+
+        // Try to set Venue from remaining parts
+        if (parts.length > 2) {
+          // If part 2 starts with "In ", that's a strong venue signal
+          let v = parts.slice(2).join(". ").trim();
+          // cleanup doi
+          v = v.split(/doi:/i)[0].trim();
+          if (v.length > 2) venue = v;
+        }
+      }
+    }
+  }
+
+  // 2. Fallback / Universal Strategy (Original Logic improved)
   if (!title && year) {
     const yearRegex = new RegExp(`\\b${year}\\b[).]?\\s*`);
     const splitParts = raw.split(yearRegex);
     if (splitParts.length > 1) {
       let candidate = splitParts[1];
       // Updated blockers list
-      const blockers = [/\.\s+In\b/i, /\.\s+Proceedings/i, /\.\s+Proc\./i, /\.\s+Journal/i, /\.\s+Trans\./i, /\.\s+IEEE/i, /\.\s+ACM/i, /\.\s+Springer/i, /\.\s+Vol\./i, /\.\s+http/i];
+      const blockers = [/\.\s+In\b/i, /\.\s+Proceedings/i, /\.\s+Proc\./i, /\.\s+Journal/i, /\.\s+Trans\./i, /\.\s+IEEE/i, /\.\s+ACM/i, /\.\s+Springer/i, /\.\s+Vol\./i, /\.\s+http/i, /doi:/i];
       let bestIdx = candidate.length;
       let matchedBlocker = -1;
 
@@ -388,41 +437,90 @@ function parseCitation(id: string, raw: string): Citation {
         if (firstPeriod && firstPeriod.index !== undefined) bestIdx = firstPeriod.index;
       }
 
-      // If we found a specific blocker like "In" or "Proc", the REST is potential Venue
       if (matchedBlocker !== -1) {
-        // Extract venue from the rest
         let venueText = candidate.substring(bestIdx).trim();
-        // Remove leading ". " or ". In "
         venueText = venueText.replace(/^\.\s+(In\s+)?/i, "").trim();
-        // Cleanup trailing punctuation
         venueText = venueText.replace(/[.,]$/, "");
         if (venueText.length > 2) venue = venueText;
       }
 
       candidate = candidate.substring(0, bestIdx).trim();
       candidate = candidate.replace(/\.$/, "").replace(/\s+In$/i, "");
-      if (candidate.length > 5) title = candidate;
+      if (candidate.length > 5 && !/doi:/i.test(candidate)) {
+        // Validate that candidate is not just pages or metadata
+        if (!/^[\d\(\[]/.test(candidate)) {
+          title = candidate;
+        }
+      }
     }
   }
 
+  // 3. Fallback generic split
   if (!title) {
-    const parts = raw.split(/\.\s+/);
-    if (parts.length >= 3) {
+    const parts = raw.split(/(?<!\b(?:[A-Z]|et al|Inc|Ltd))\.\s+/);
+    if (parts.length >= 2) {
       const p1 = parts[1].trim();
-      if (p1.length > 10 && !/^(In|Proc|Journal|Vol)/i.test(p1) && !/\d{4}/.test(p1)) title = p1;
+      if (p1.length > 5 && !/^(In|Proc|Journal|Vol|doi|http)/i.test(p1) && !/^\d{4}/.test(p1)) {
+        title = p1;
+        // If we found title this way, assume prev part is author if not set
+        if (!authors) authors = parts[0].trim();
+      }
+    }
+  }
+  // Try to take everything before the Title
+  if (title) {
+    const titleIdx = raw.indexOf(title);
+    if (titleIdx > 3) {
+      const candidate = raw.substring(0, titleIdx).trim().replace(/[.,]+$/, "");
+      if (candidate.length < 200) authors = candidate;
     }
   }
 
-  // Fallback for Venue if not found via title split?
-  // Maybe look for "Journal of..." or "Transactions on..."
-  if (!venue) {
-    const venueMatch = raw.match(/(?:Journal|Transactions|Proceedings|Conference|Symposium|Workshop)\s+of\s+.*?(?=\.|,|\d{4})/i);
-    if (venueMatch) venue = venueMatch[0].trim();
+  // Original regex fallback
+  if (!authors) {
+    const authorsMatch = raw.match(/^([^(0-9"]+?)(?=[\s,]*(?:\(|\d{4}|"|“))/);
+    if (authorsMatch) authors = authorsMatch[1].trim().replace(/[,.]$/, "");
   }
 
-  let authors: string | null = null;
-  const authorsMatch = raw.match(/^([^(0-9"]+?)(?=[\s,]*(?:\(|\d{4}|"|“))/);
-  if (authorsMatch) authors = authorsMatch[1].trim().replace(/[,.]$/, "");
+  // Comma Strategy
+  if (!title && !authors && raw.includes(",")) {
+    const parts = raw.split(", ");
+    if (parts.length > 2) {
+      let splitIndex = -1;
+      const isName = (str: string) => {
+        const trimmed = str.trim();
+        if (trimmed.length > 20) return false;
+        if (/\b(and|et al|Inc)\b/.test(trimmed)) return true;
+        return /[A-Z]\./.test(trimmed) || /^[A-Z][a-z]+$/.test(trimmed);
+      };
+
+      for (let i = 0; i < parts.length - 1; i++) {
+        const current = parts[i];
+        const next = parts[i + 1];
+        if (isName(current) && !isName(next)) {
+          if (next.length > 10 && !/^\d{4}/.test(next) && !/^(Vol|No|pp)/i.test(next)) {
+            splitIndex = i + 1;
+            break;
+          }
+        }
+      }
+
+      if (splitIndex !== -1) {
+        authors = parts.slice(0, splitIndex).join(", ").trim();
+        const remaining = parts.slice(splitIndex).join(", ");
+        const yearMatch2 = remaining.match(/\s+\(?\b(19|20)\d{2}\b/);
+        if (yearMatch2 && yearMatch2.index) {
+          title = remaining.substring(0, yearMatch2.index).trim().replace(/[.,]$/, "");
+          venue = remaining.substring(yearMatch2.index).trim();
+        } else {
+          title = parts[splitIndex].trim();
+          if (parts.length > splitIndex + 1) {
+            venue = parts.slice(splitIndex + 1).join(", ").trim();
+          }
+        }
+      }
+    }
+  }
 
   return { id, raw, title, authors, venue, year };
 }

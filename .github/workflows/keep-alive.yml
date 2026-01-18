@@ -1,0 +1,17 @@
+name: Keep Alive HF Space
+
+on:
+  schedule:
+    # Run at 00:00 UTC every day
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Hugging Face Space
+        # Replace with your actual HF Space URL
+        # For now, using the public kermitt2-grobid as placeholder or your future space
+        # User should update this url.
+        run: curl -I https://yokoi72-grobid.hf.space

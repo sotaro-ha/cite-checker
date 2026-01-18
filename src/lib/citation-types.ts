@@ -6,4 +6,5 @@ export interface Citation {
     venue?: string | null;
     year: string | null;
     style?: string;
+    isGrobidEnriched?: boolean;
 }
