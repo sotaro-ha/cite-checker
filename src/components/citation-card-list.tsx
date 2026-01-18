@@ -175,9 +175,17 @@ export function CitationCardList({ citations, results, detectedStyle, lang }: Ci
                                         <div className="flex flex-col items-center gap-1">
                                             {result ? (
                                                 result.found ? (
-                                                    <div className="text-emerald-600 bg-emerald-50 p-1.5 rounded-full">
-                                                        <CheckCircle2 size={20} />
-                                                    </div>
+                                                    // Strict check: Only show green check if confidence is very high (> 0.9)
+                                                    result.confidence > 0.9 ? (
+                                                        <div className="text-emerald-600 bg-emerald-50 p-1.5 rounded-full">
+                                                            <CheckCircle2 size={20} />
+                                                        </div>
+                                                    ) : (
+                                                        // Show Triangle for "Found but uncertain" (0.4 < confidence <= 0.9)
+                                                        <div className="text-amber-500 bg-amber-50 p-1.5 rounded-full">
+                                                            <AlertTriangle size={20} />
+                                                        </div>
+                                                    )
                                                 ) : (
                                                     <div className="text-amber-500 bg-amber-50 p-1.5 rounded-full">
                                                         <AlertTriangle size={20} />
@@ -270,7 +278,7 @@ export function CitationCardList({ citations, results, detectedStyle, lang }: Ci
                                             <div className="pt-2 flex flex-wrap gap-3 items-center">
                                                 {result?.source && (
                                                     <Badge variant="secondary" className="bg-gray-50 text-gray-500 border-gray-100 shadow-none text-[10px] h-5">
-                                                        via {result.source === "crossref" ? "Crossref" : result.source === "openalex" ? "OpenAlex" : "Semantic Scholar"}
+                                                        via {result.source === "crossref" ? "Crossref" : "OpenAlex"}
                                                     </Badge>
                                                 )}
                                                 {result?.paper?.doi && (
@@ -283,25 +291,6 @@ export function CitationCardList({ citations, results, detectedStyle, lang }: Ci
                                                         DOI: {result.paper.doi}
                                                     </a>
                                                 )}
-
-                                                <details className="ml-auto">
-                                                    <summary className="text-[10px] text-muted-foreground/40 cursor-pointer hover:text-[#DA7756] list-none transition-colors">
-                                                        Raw Text
-                                                    </summary>
-                                                    <p className="fixed sm:absolute bg-white border border-[#E5E2DD] p-3 rounded-md shadow-lg text-xs z-50 mt-2 max-w-sm text-muted-foreground whitespace-pre-wrap">
-                                                        {citation.raw}
-                                                    </p>
-                                                </details>
-
-                                                <details className="ml-4">
-                                                    <summary className="text-[10px] text-muted-foreground/40 cursor-pointer hover:text-[#DA7756] list-none transition-colors">
-                                                        Debug
-                                                    </summary>
-                                                    <div className="mt-2 p-3 bg-slate-50 border border-slate-200 rounded-md text-xs text-muted-foreground break-all font-mono">
-                                                        <div className="font-bold mb-1 border-b border-slate-200 pb-1 text-[10px] uppercase tracking-wider">Search Query Used:</div>
-                                                        {citation.title || citation.raw.substring(0, 100)}
-                                                    </div>
-                                                </details>
                                             </div>
                                         </div>
                                     </div>

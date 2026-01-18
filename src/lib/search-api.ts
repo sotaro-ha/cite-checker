@@ -195,25 +195,59 @@ function calculateSimilarity(str1: string, str2: string): number {
 }
 
 /**
- * Calculate author similarity score
+ * Calculate author similarity score using Jaccard index on last names
+ * This penalizes cases where the number of authors differs significantly (e.g. 5 vs 1)
  */
 function calculateAuthorSimilarity(citationAuthors: string, paperAuthors: string[]): number {
     if (!citationAuthors || !paperAuthors || paperAuthors.length === 0) return 0;
 
-    const citAuthorsLower = citationAuthors.toLowerCase();
+    // 1. Parse query authors string into a list of normalized last names
+    // Remove "and", "&", separators
+    const cleanedCit = citationAuthors
+        .replace(/\b(and|et al\.?)\b/gi, "")
+        .replace(/[&,;]/g, " ");
+
+    // Split by spaces to get tokens, filter for things that look like names (>2 chars)
+    const citTokens = cleanedCit
+        .trim()
+        .split(/\s+/)
+        .map(t => t.toLowerCase())
+        .filter(t => t.length > 2);
+
+    // Heuristic: If we have multiple tokens, assume they might be "First Last" pairs
+    // We try to extract just the "Last" names if possible, or just treat all tokens as a bag of words
+    // For "Orestis Georgiou, William Frier..." -> [orestis, georgiou, william, frier...]
+    // Paper authors: ["Euan Freeman"] -> [euan, freeman]
+
+    // Better approach: Extract last names from Paper Authors (reliable)
+    const paperLastNames = paperAuthors.map(a => {
+        const parts = a.trim().split(" ");
+        return parts[parts.length - 1].toLowerCase();
+    });
+
+    // Count matches
+    const matchedIndices = new Set<number>();
     let matchCount = 0;
 
-    for (const author of paperAuthors) {
-        // Extract last name (family name)
-        const lastName = author.toLowerCase().split(" ").pop() || "";
-        if (lastName.length > 2 && citAuthorsLower.includes(lastName)) {
+    for (const paperLastName of paperLastNames) {
+        if (citTokens.includes(paperLastName)) {
             matchCount++;
         }
     }
 
-    // Return ratio of matched authors
-    if (matchCount === 0) return 0;
-    return Math.min(1, matchCount / Math.min(paperAuthors.length, 3)); // Cap at first 3 authors
+    // Identify effective number of authors in query
+    // If the query string has commas, we can estimate count accurately
+    const queryAuthorCountEstimate = citationAuthors.includes(",")
+        ? citationAuthors.split(",").length
+        : Math.ceil(citTokens.length / 2); // Rough guess: 2 tokens per author
+
+    // Denominator: Max of (estimated query authors, actual paper authors)
+    // This ensures that if Query=5 and Paper=1, score is at most 1/5 = 0.2
+    const denominator = Math.max(queryAuthorCountEstimate, paperAuthors.length);
+
+    if (denominator === 0) return 0;
+
+    return matchCount / denominator;
 }
 
 /**
