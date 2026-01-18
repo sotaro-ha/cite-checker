@@ -15,15 +15,14 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Cite Checker - 引用の信頼性を確かめる (Verify Citations)",
-  description: "Free PDF citation verifier. Upload your manuscript to check if references exist. Uses Crossref & OpenAlex. 論文の引用文献を自動チェック。ハルシネーション検出、参考文献の検証に。",
+  title: "Cite Checker - Privacy-First Citation Verifier (No AI Hallucinations)",
+  description: "Secure, local PDF citation checker. Your manuscript never leaves your device. Detects fake references using Crossref/OpenAlex without generative AI. 論文の引用を完全ローカルで検証。AIハルシネーションなし。",
   keywords: [
     // Japanese
-    "引用チェック", "引用検証", "論文", "査読", "参考文献", "自動チェック", "ハルシネーション", "捏造検出", "PDF解析", "研究", "大学院",
+    "引用チェック", "引用検証", "完全ローカル", "プライバシー重視", "AIなし", "ハルシネーション対策", "論文", "査読", "参考文献", "捏造検出",
     // English
-    "citation checker", "reference verifier", "citation verification", "pdf citation check",
-    "hallucination detector", "fake citation check", "academic integrity", "research tools",
-    "Crossref", "OpenAlex", "bibliography check", "manuscript tools"
+    "citation checker", "local pdf verifier", "privacy first", "no ai hallucination", "deterministic verification",
+    "reference check", "academic integrity", "Crossref", "OpenAlex", "secure manuscript check"
   ],
   metadataBase: new URL("https://cite-checker.vercel.app"),
 };
