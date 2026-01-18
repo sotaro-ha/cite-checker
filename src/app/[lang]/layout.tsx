@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
+import "../../globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import { FeedbackButton } from "@/components/feedback-button";
+import { Language } from "@/lib/i18n";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -15,27 +16,43 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: "Cite Checker - Privacy-First Citation Verifier (No AI Hallucinations)",
-  description: "Secure, local PDF citation checker. Your manuscript never leaves your device. Detects fake references using Crossref/OpenAlex without generative AI. 論文の引用を完全ローカルで検証。AIハルシネーションなし。",
-  keywords: [
-    // Japanese
-    "引用チェック", "引用検証", "完全ローカル", "プライバシー重視", "AIなし", "ハルシネーション対策", "論文", "査読", "参考文献", "捏造検出",
-    // English
-    "citation checker", "local pdf verifier", "privacy first", "no ai hallucination", "deterministic verification",
-    "reference check", "academic integrity", "Crossref", "OpenAlex", "secure manuscript check"
-  ],
-  metadataBase: new URL("https://cite-checker.vercel.app"),
-};
+export async function generateMetadata({ params }: { params: Promise<{ lang: Language }> }): Promise<Metadata> {
+  const { lang } = await params;
 
+  const title = lang === 'en'
+    ? "Cite Checker - Privacy-First Citation Verifier (No AI Hallucinations)"
+    : "Cite Checker - 引用の信頼性を確かめる (完全ローカル・AIなし)";
 
-export default function RootLayout({
+  const description = lang === 'en'
+    ? "Secure, local PDF citation checker. Detects fake references directly from Crossref/OpenAlex. No AI hallucinations."
+    : "PDFの引用文献を完全ローカルで検証。AIハルシネーションなしで、Crossref/OpenAlexと直接照合します。";
+
+  return {
+    title,
+    description,
+    keywords: [
+      "citation checker", "reference verifier", "privacy first", "no ai", "Crossref", "OpenAlex",
+      "引用チェック", "引用検証", "AIなし", "完全ローカル", "ハルシネーション対策"
+    ],
+    metadataBase: new URL("https://cite-checker.vercel.app"),
+  };
+}
+
+export async function generateStaticParams() {
+  return [{ lang: 'ja' }, { lang: 'en' }]
+}
+
+export default async function RootLayout({
   children,
+  params,
 }: Readonly<{
   children: React.ReactNode;
+  params: Promise<{ lang: Language }>;
 }>) {
+  const { lang } = await params;
+
   return (
-    <html lang="en">
+    <html lang={lang}>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >

@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, use } from "react";
+import Link from "next/link";
 import { toast } from "sonner";
 import { UploadZone } from "@/components/upload-zone";
 import { CitationCardList } from "@/components/citation-card-list";
@@ -11,9 +12,11 @@ import { Language, translations } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 import { Logo } from "@/components/logo";
 
-export default function Home() {
+export default function Home({ params }: { params: Promise<{ lang: Language }> }) {
+  // Unwrap params
+  const { lang } = use(params);
+
   // State
-  const [lang, setLang] = useState<Language>("ja");
   const [citations, setCitations] = useState<Citation[]>([]);
   const [searchResults, setSearchResults] = useState<Record<string, SearchResult>>({});
   const [isProcessing, setIsProcessing] = useState(false);
@@ -165,31 +168,31 @@ export default function Home() {
       <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-[#E5E2DD]">
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <a href="/" className="text-xl font-sans font-bold tracking-tight text-[#1A1A1A] hover:opacity-80 transition-opacity">
+            <Link href={`/${lang}`} className="text-xl font-sans font-bold tracking-tight text-[#1A1A1A] hover:opacity-80 transition-opacity">
               {t.title}
-            </a>
+            </Link>
           </div>
 
           <div className="flex items-center gap-4">
             <div className="flex bg-[#FAF9F7] rounded-full p-1 border border-[#E5E2DD]">
-              <button
-                onClick={() => setLang("en")}
+              <Link
+                href="/en"
                 className={cn(
-                  "px-3 py-1 text-xs font-medium rounded-full transition-all duration-200",
+                  "px-3 py-1 text-xs font-medium rounded-full transition-all duration-200 block",
                   lang === "en" ? "bg-white text-[#DA7756] shadow-sm" : "text-muted-foreground hover:text-foreground"
                 )}
               >
                 EN
-              </button>
-              <button
-                onClick={() => setLang("ja")}
+              </Link>
+              <Link
+                href="/ja"
                 className={cn(
-                  "px-3 py-1 text-xs font-medium rounded-full transition-all duration-200",
+                  "px-3 py-1 text-xs font-medium rounded-full transition-all duration-200 block",
                   lang === "ja" ? "bg-white text-[#DA7756] shadow-sm" : "text-muted-foreground hover:text-foreground"
                 )}
               >
                 日本語
-              </button>
+              </Link>
             </div>
 
             <a href="https://github.com/sotaro-ha/cite-checker" target="_blank" rel="noopener noreferrer" className="text-muted-foreground/40 hover:text-muted-foreground transition-colors p-1" aria-label="GitHub Repository">
@@ -274,9 +277,9 @@ export default function Home() {
       </div>
 
       <footer className="py-8 text-center border-t border-[#E5E2DD]/50 mt-12 bg-white/50 flex flex-col gap-2 items-center justify-center">
-        <a href="/disclaimer" className="text-xs text-muted-foreground/60 hover:text-muted-foreground hover:underline transition-colors">
+        <Link href={`/${lang}/disclaimer`} className="text-xs text-muted-foreground/60 hover:text-muted-foreground hover:underline transition-colors">
           免責事項 (Disclaimer)
-        </a>
+        </Link>
       </footer>
     </main>
   );
