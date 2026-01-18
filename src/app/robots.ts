@@ -28,5 +28,6 @@ export default function robots(): MetadataRoute.Robots {
                 allow: '/',
             },
         ],
+        sitemap: 'https://www.citechecker.app/sitemap.xml',
     };
 }
