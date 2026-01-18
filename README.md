@@ -1,4 +1,7 @@
-# Cite Checker - 引用の信頼性を確かめる (Verify Citations)
+# Cite Checker
+
+![License: CC BY-NC 4.0](https://img.shields.io/badge/License-CC%20BY--NC%204.0-lightgrey.svg)
+ - 引用の信頼性を確かめる (Verify Citations)
 
 Cite Checker is a privacy-first tool designed to verify the existence of citations in your manuscript PDF.
 It helps researchers detect "hallucinated" or incorrect references by cross-checking your bibliography against trusted academic databases (Crossref & OpenAlex).
