@@ -2,9 +2,13 @@
 
 import { useState, useCallback, use, useMemo } from "react";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { toast } from "sonner";
 import { UploadZone } from "@/components/upload-zone";
-import { CitationCardList } from "@/components/citation-card-list";
+const CitationCardList = dynamic(() => import("@/components/citation-card-list").then(mod => mod.CitationCardList), {
+  ssr: false,
+  loading: () => <div className="h-96 w-full animate-pulse bg-gray-50/50 rounded-xl border border-gray-100" />
+});
 import { extractTextFromPDF, extractCitations, Citation } from "@/lib/pdf-parser";
 import { searchCrossref, searchSemanticScholar, searchOpenAlex, calculateConfidence, calculateConfidenceWithBreakdown, SearchResult } from "@/lib/search-api";
 import { WarningBanner } from "@/components/warning-banner";
