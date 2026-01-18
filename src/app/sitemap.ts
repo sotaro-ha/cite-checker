@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next'
 
 export default function sitemap(): MetadataRoute.Sitemap {
-    const baseUrl = 'https://cite-checker.vercel.app'
+    const baseUrl = 'https://www.citechecker.app'
     const lastModified = new Date()
 
     return [

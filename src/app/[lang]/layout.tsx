@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const BASE_URL = "https://cite-checker.vercel.app";
+const BASE_URL = "https://www.citechecker.app";
 
 export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
   const { lang } = (await params) as { lang: Language };
@@ -151,9 +151,9 @@ export default async function RootLayout({
               "@graph": [
                 {
                   "@type": "WebApplication",
-                  "@id": "https://cite-checker.vercel.app/#webapp",
+                  "@id": "https://www.citechecker.app/#webapp",
                   "name": "Cite Checker",
-                  "url": "https://cite-checker.vercel.app",
+                  "url": "https://www.citechecker.app",
                   "applicationCategory": "UtilityApplication",
                   "operatingSystem": "Any",
                   "browserRequirements": "Requires JavaScript. Works in Chrome, Firefox, Safari, Edge.",
@@ -172,7 +172,7 @@ export default async function RootLayout({
                     "Privacy-first local processing",
                     "No account required"
                   ],
-                  "screenshot": "https://cite-checker.vercel.app/og-image.png",
+                  "screenshot": "https://www.citechecker.app/og-image.png",
                   "aggregateRating": {
                     "@type": "AggregateRating",
                     "ratingValue": "4.8",
@@ -181,8 +181,8 @@ export default async function RootLayout({
                 },
                 {
                   "@type": "WebSite",
-                  "@id": "https://cite-checker.vercel.app/#website",
-                  "url": "https://cite-checker.vercel.app",
+                  "@id": "https://www.citechecker.app/#website",
+                  "url": "https://www.citechecker.app",
                   "name": "Cite Checker",
                   "description": "Free citation verification tool for academic papers",
                   "inLanguage": ["en", "ja"]
