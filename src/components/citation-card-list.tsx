@@ -1,25 +1,15 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import dynamic from "next/dynamic";
 import { Citation } from "@/lib/citation-types";
 import { SearchResult, ConfidenceBreakdown } from "@/lib/search-api";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { motion, AnimatePresence } from "motion/react";
 import { CheckCircle2, AlertTriangle, ExternalLink, CornerDownRight, HelpCircle, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 import { Language, translations } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
-
-// Dynamic import for motion to reduce initial bundle size (bundle-dynamic-imports)
-const MotionDiv = dynamic(
-    () => import("motion/react").then((mod) => mod.motion.div),
-    { ssr: false }
-);
-const AnimatePresence = dynamic(
-    () => import("motion/react").then((mod) => mod.AnimatePresence),
-    { ssr: false }
-);
 
 function ConfidenceTooltipContent({ breakdown, lang }: { breakdown: ConfidenceBreakdown; lang: Language }) {
     const items = [
@@ -136,7 +126,7 @@ export function CitationCardList({ citations, results, detectedStyle, lang }: Ci
                         const originalIndex = citations.findIndex(c => c.id === citation.id);
 
                         return (
-                            <MotionDiv
+                            <motion.div
                                 key={citation.id}
                                 layout="position"
                                 initial={{ opacity: 0, y: 20 }}
@@ -313,7 +303,7 @@ export function CitationCardList({ citations, results, detectedStyle, lang }: Ci
                                         </div>
                                     </div>
                                 </Card>
-                            </MotionDiv>
+                            </motion.div>
                         );
                     })}
                 </AnimatePresence>
