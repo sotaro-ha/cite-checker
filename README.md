@@ -6,9 +6,18 @@
 Cite Checker is a privacy-first tool designed to verify the existence of citations in your manuscript PDF.
 It helps researchers detect "hallucinated" or incorrect references by cross-checking your bibliography against trusted academic databases (Crossref & OpenAlex).
 
-![Cite Checker Demo](./public/og-image.png)
+[![Cite Checker Demo](./public/og-image.png)](https://www.citechecker.app/)
+
+**[Try the Demo](https://www.citechecker.app/)**
+
+
 
 ## ✨ Key Features (主な特徴)
+... (skipping middle) ...
+## 📝 License
+
+This project is licensed under the [CC BY-NC 4.0](LICENSE) (Creative Commons Attribution-NonCommercial 4.0 International) license.
+You are free to share and adapt the material for non-commercial purposes, provided appropriate credit is given. Commercial use is strictly prohibited.
 
 ### 🔒 Privacy-First: Local PDF Parsing (完全ローカル処理)
 We prioritize your research confidentiality. Your manuscript **never leaves your device**.
@@ -72,7 +81,8 @@ Open [http://localhost:3000](http://localhost:3000) with your browser.
 
 ## 📝 License
 
-This project is open source.
+This project is licensed under the [CC BY-NC 4.0](LICENSE) (Creative Commons Attribution-NonCommercial 4.0 International).
+Commercial use is prohibited.
 
 ## ⚠️ Disclaimer
 
