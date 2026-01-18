@@ -43,6 +43,8 @@ export async function generateStaticParams() {
   return [{ lang: 'ja' }, { lang: 'en' }]
 }
 
+import { notFound } from "next/navigation";
+
 export default async function RootLayout({
   children,
   params,
@@ -51,6 +53,10 @@ export default async function RootLayout({
   params: Promise<{ lang: string }>;
 }>) {
   const { lang } = (await params) as { lang: Language };
+
+  if (lang !== "ja" && lang !== "en") {
+    notFound();
+  }
 
   return (
     <html lang={lang}>
