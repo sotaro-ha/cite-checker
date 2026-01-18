@@ -170,6 +170,13 @@ export async function POST(request: NextRequest) {
             });
         }
 
+        if (citations.length > 100) {
+            return new Response(JSON.stringify({ error: "Too many citations (max 100)" }), {
+                status: 400,
+                headers: { "Content-Type": "application/json" },
+            });
+        }
+
         // Create a streaming response
         const encoder = new TextEncoder();
         const stream = new ReadableStream({

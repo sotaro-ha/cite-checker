@@ -9,6 +9,10 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: "Invalid input" }, { status: 400 });
         }
 
+        if (citations.length > 100) {
+            return NextResponse.json({ error: "Too many citations (max 100)" }, { status: 400 });
+        }
+
         const parsed = await parseCitationWithGrobid(citations);
         return NextResponse.json({ results: parsed });
 

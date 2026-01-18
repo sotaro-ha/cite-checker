@@ -30,7 +30,12 @@ export function generateCSV(citations: Citation[], results: Record<string, Searc
             : "Not Found";
 
         // Escape CSV fields
-        const escape = (text: string | number | null | undefined) => `"${String(text || "").replace(/"/g, '""')}"`;
+        const escape = (text: string | number | null | undefined) => {
+            const str = String(text || "");
+            // Prevent formula injection (starts with =, +, -, @)
+            const prefix = /^[=+\-@]/.test(str) ? "'" : "";
+            return `"${prefix}${str.replace(/"/g, '""')}"`;
+        };
 
         return [
             escape(title),
