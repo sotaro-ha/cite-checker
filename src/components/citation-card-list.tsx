@@ -1,15 +1,25 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import dynamic from "next/dynamic";
 import { Citation } from "@/lib/citation-types";
 import { SearchResult, ConfidenceBreakdown } from "@/lib/search-api";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { motion, AnimatePresence } from "framer-motion";
 import { CheckCircle2, AlertTriangle, ExternalLink, CornerDownRight, HelpCircle, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 import { Language, translations } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
+
+// Dynamic import for motion to reduce initial bundle size (bundle-dynamic-imports)
+const MotionDiv = dynamic(
+    () => import("motion/react").then((mod) => mod.motion.div),
+    { ssr: false }
+);
+const AnimatePresence = dynamic(
+    () => import("motion/react").then((mod) => mod.AnimatePresence),
+    { ssr: false }
+);
 
 function ConfidenceTooltipContent({ breakdown, lang }: { breakdown: ConfidenceBreakdown; lang: Language }) {
     const items = [
@@ -52,9 +62,12 @@ export function CitationCardList({ citations, results, detectedStyle, lang }: Ci
     const t = translations[lang];
     const [sortMode, setSortMode] = useState<SortMode>("default");
 
-    const total = citations.length;
-    const found = Object.values(results).filter(r => r?.found).length;
-    const searched = Object.keys(results).length;
+    // Memoize computed stats to avoid recalculation on every render (rerender-memo)
+    const { total, found, searched } = useMemo(() => ({
+        total: citations.length,
+        found: Object.values(results).filter(r => r?.found).length,
+        searched: Object.keys(results).length
+    }), [citations.length, results]);
 
     const sortedCitations = useMemo(() => {
         if (sortMode === "default") return citations;
@@ -123,12 +136,12 @@ export function CitationCardList({ citations, results, detectedStyle, lang }: Ci
                         const originalIndex = citations.findIndex(c => c.id === citation.id);
 
                         return (
-                            <motion.div
+                            <MotionDiv
                                 key={citation.id}
                                 layout="position"
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                transition={{ duration: 0.3, delay: index * 0.02 }}
+                                transition={{ duration: 0.2, delay: index * 0.02 }}
                             >
                                 <Card className={cn(
                                     "p-6 border transition-all duration-300 relative bg-white hover:shadow-md",
@@ -161,7 +174,7 @@ export function CitationCardList({ citations, results, detectedStyle, lang }: Ci
                                                         }
 
                                                         {(result.confidence < 1 || (result.confidence < 0.6 && (citation.venue?.match(/^(https?:\/\/|www\.)/i) || citation.venue?.includes("http")))) &&
-                                                            <HelpCircle size={10} className="opacity-50" />
+                                                            <HelpCircle size={10} className="opacity-50" aria-hidden="true" />
                                                         }
                                                     </Badge>
                                                 </TooltipTrigger>
@@ -178,17 +191,17 @@ export function CitationCardList({ citations, results, detectedStyle, lang }: Ci
                                                     // Strict check: Only show green check if confidence is very high (> 0.9)
                                                     result.confidence > 0.9 ? (
                                                         <div className="text-emerald-600 bg-emerald-50 p-1.5 rounded-full">
-                                                            <CheckCircle2 size={20} />
+                                                            <CheckCircle2 size={20} aria-hidden="true" />
                                                         </div>
                                                     ) : (
                                                         // Show Triangle for "Found but uncertain" (0.4 < confidence <= 0.9)
                                                         <div className="text-amber-500 bg-amber-50 p-1.5 rounded-full">
-                                                            <AlertTriangle size={20} />
+                                                            <AlertTriangle size={20} aria-hidden="true" />
                                                         </div>
                                                     )
                                                 ) : (
                                                     <div className="text-amber-500 bg-amber-50 p-1.5 rounded-full">
-                                                        <AlertTriangle size={20} />
+                                                        <AlertTriangle size={20} aria-hidden="true" />
                                                     </div>
                                                 )
                                             ) : (
@@ -203,7 +216,7 @@ export function CitationCardList({ citations, results, detectedStyle, lang }: Ci
                                         <div className="space-y-5">
                                             {/* TITLE ROW */}
                                             <div className="group/field">
-                                                <div className="text-[10px] font-bold text-muted-foreground/40 uppercase tracking-widest mb-1.5 flex items-center gap-2">
+                                                <div className="text-[10px] font-bold text-muted-foreground/40 uppercase mb-1.5 flex items-center gap-2">
                                                     {t.labelTitle}
                                                 </div>
                                                 <div className="pl-0 space-y-2">
@@ -219,7 +232,7 @@ export function CitationCardList({ citations, results, detectedStyle, lang }: Ci
                                                     {result?.paper && (
                                                         <div className="relative pl-5 mt-2 animate-in fade-in slide-in-from-left-2">
                                                             <div className="absolute left-0 top-1.5 text-[#DA7756]">
-                                                                <CornerDownRight size={14} />
+                                                                <CornerDownRight size={14} aria-hidden="true" />
                                                             </div>
                                                             <a
                                                                 href={result.paper.url || "#"}
@@ -228,7 +241,7 @@ export function CitationCardList({ citations, results, detectedStyle, lang }: Ci
                                                                 className="text-sm font-medium text-[#DA7756] hover:underline hover:text-[#B95E3F] leading-snug flex items-start gap-1 transition-colors block"
                                                             >
                                                                 {result.paper.title} (Detected)
-                                                                <ExternalLink size={10} className="mt-1 opacity-50 flex-shrink-0" />
+                                                                <ExternalLink size={10} className="mt-1 opacity-50 flex-shrink-0" aria-hidden="true" />
                                                             </a>
                                                         </div>
                                                     )}
@@ -237,7 +250,7 @@ export function CitationCardList({ citations, results, detectedStyle, lang }: Ci
 
                                             {/* AUTHORS ROW */}
                                             <div className="group/field">
-                                                <div className="text-[10px] font-bold text-muted-foreground/40 uppercase tracking-widest mb-1.5">
+                                                <div className="text-[10px] font-bold text-muted-foreground/40 uppercase mb-1.5">
                                                     {t.labelAuthors}
                                                 </div>
                                                 <div className="pl-0 space-y-1.5">
@@ -247,7 +260,7 @@ export function CitationCardList({ citations, results, detectedStyle, lang }: Ci
                                                     {citation.authors && result?.paper?.authors && result.paper.authors.length > 0 && (
                                                         <div className="relative pl-5 animate-in fade-in slide-in-from-left-2">
                                                             <div className="absolute left-0 top-1 text-muted-foreground/40">
-                                                                <CornerDownRight size={12} />
+                                                                <CornerDownRight size={12} aria-hidden="true" />
                                                             </div>
                                                             <p className="text-sm text-muted-foreground">
                                                                 {result.paper.authors.join(", ")}
@@ -259,7 +272,7 @@ export function CitationCardList({ citations, results, detectedStyle, lang }: Ci
 
                                             {/* VENUE ROW */}
                                             <div className="group/field">
-                                                <div className="text-[10px] font-bold text-muted-foreground/40 uppercase tracking-widest mb-1.5">
+                                                <div className="text-[10px] font-bold text-muted-foreground/40 uppercase mb-1.5">
                                                     {t.labelVenue}
                                                 </div>
                                                 <div className="pl-0 space-y-1.5">
@@ -269,7 +282,7 @@ export function CitationCardList({ citations, results, detectedStyle, lang }: Ci
                                                     {citation.venue && result?.paper?.venue && (
                                                         <div className="relative pl-5 animate-in fade-in slide-in-from-left-2">
                                                             <div className="absolute left-0 top-1 text-muted-foreground/40">
-                                                                <CornerDownRight size={12} />
+                                                                <CornerDownRight size={12} aria-hidden="true" />
                                                             </div>
                                                             <p className="text-sm text-muted-foreground">
                                                                 {result.paper.venue}
@@ -300,7 +313,7 @@ export function CitationCardList({ citations, results, detectedStyle, lang }: Ci
                                         </div>
                                     </div>
                                 </Card>
-                            </motion.div>
+                            </MotionDiv>
                         );
                     })}
                 </AnimatePresence>

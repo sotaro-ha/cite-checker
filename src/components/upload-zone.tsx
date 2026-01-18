@@ -65,12 +65,13 @@ export function UploadZone({ onFileSelected, isLoading, lang }: UploadZoneProps)
                 onChange={handleFileInput}
                 className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20"
                 disabled={isLoading}
+                aria-label={t.dragDrop}
             />
 
             <div className="flex flex-col items-center gap-5 text-center z-10">
-                <div className={`w-16 h-16 rounded-full flex items-center justify-center transition-colors duration-300 ${isDragging ? "bg-[#DA7756]/10 text-[#DA7756]" : "bg-[#FAF9F7] text-muted-foreground group-hover:text-[#DA7756] group-hover:bg-[#DA7756]/5"
+                <div className={`size-16 rounded-full flex items-center justify-center transition-colors duration-200 ${isDragging ? "bg-[#DA7756]/10 text-[#DA7756]" : "bg-[#FAF9F7] text-muted-foreground group-hover:text-[#DA7756] group-hover:bg-[#DA7756]/5"
                     }`}>
-                    <UploadCloud size={32} strokeWidth={1.5} />
+                    <UploadCloud size={32} strokeWidth={1.5} aria-hidden="true" />
                 </div>
 
                 <div className="space-y-1">
@@ -86,7 +87,7 @@ export function UploadZone({ onFileSelected, isLoading, lang }: UploadZoneProps)
             {isLoading && (
                 <div className="absolute inset-0 flex items-center justify-center bg-white/80 backdrop-blur-[1px] rounded-lg z-30 transition-all duration-300">
                     <div className="flex flex-col items-center gap-3">
-                        <div className="w-8 h-8 border-2 border-[#DA7756] border-t-transparent rounded-full animate-spin" />
+                        <div className="size-8 border-2 border-[#DA7756] border-t-transparent rounded-full animate-spin" />
                         <span className="text-sm font-medium text-[#DA7756] animate-pulse">{t.analyzing}</span>
                     </div>
                 </div>

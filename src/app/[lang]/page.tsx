@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, use } from "react";
+import { useState, useCallback, use, useMemo } from "react";
 import Link from "next/link";
 import { toast } from "sonner";
 import { UploadZone } from "@/components/upload-zone";
@@ -46,9 +46,13 @@ export default function Home({ params }: { params: Promise<{ lang: string }> }) 
         const query = rawQuery.replace(/\s+/g, " ").trim();
 
         try {
-          // Progressive Search Strategy
-          // 1. Try Crossref (Returns top 3)
-          let papers = await searchCrossref(query);
+          // Progressive Search Strategy (async-parallel optimization)
+          // Start both API calls in parallel speculatively
+          const crossrefPromise = searchCrossref(query);
+          const openAlexPromise = searchOpenAlex(query);
+
+          // 1. Wait for Crossref first (primary source)
+          const papers = await crossrefPromise;
           let source: "crossref" | "semantic_scholar" | "openalex" | null = papers.length > 0 ? "crossref" : null;
 
           // Find best match in Crossref results
@@ -65,10 +69,10 @@ export default function Home({ params }: { params: Promise<{ lang: string }> }) 
             }
           }
 
-          // 2. Fallback to OpenAlex if confidence is low (< 0.8)
-          // (Semantic Scholar removed per user request to prioritize OpenAlex)
+          // 2. Use OpenAlex results if confidence is low (< 0.8)
+          // OpenAlex request was already started in parallel
           if (bestConfidence < 0.8) {
-            const oaPapers = await searchOpenAlex(query);
+            const oaPapers = await openAlexPromise;
             if (oaPapers.length > 0) {
 
               // Find best match in OpenAlex results
@@ -226,60 +230,67 @@ export default function Home({ params }: { params: Promise<{ lang: string }> }) 
     }
   };
 
-  const detectedStyle = citations.length > 0 ? citations[0].style || null : null;
-  // Count items that have been searched (result exists) AND found is false
-  const notFoundCount = Object.values(searchResults).filter(r => r && !r.found).length;
+  // Memoize derived values to avoid recalculation on every render (rerender-memo)
+  const detectedStyle = useMemo(
+    () => citations.length > 0 ? citations[0].style || null : null,
+    [citations]
+  );
+  const notFoundCount = useMemo(
+    () => Object.values(searchResults).filter(r => r && !r.found).length,
+    [searchResults]
+  );
 
   return (
-    <main className="min-h-screen bg-white text-slate-800 font-sans selection:bg-[#DA7756]/20">
+    <main className="min-h-dvh bg-white text-slate-800 font-sans selection:bg-[#DA7756]/20">
       <div className="max-w-4xl mx-auto px-6 py-12 space-y-12">
         {/* Hero Section */}
         <div className="text-center space-y-4 pt-4">
-          <h1 className="text-4xl md:text-5xl font-sans font-bold text-[#1A1A1A] tracking-tight leading-tight">
+          <h1 className="text-4xl md:text-5xl font-sans font-bold text-[#1A1A1A] leading-tight text-balance">
             {t.subtitle}
           </h1>
-          <p className="text-muted-foreground text-lg max-w-xl mx-auto font-light leading-relaxed">
+          <p className="text-muted-foreground text-lg max-w-xl mx-auto font-light leading-relaxed text-pretty">
             {t.description}
           </p>
 
           <div className="pt-4 flex flex-col sm:flex-row justify-center gap-3 sm:gap-6 text-sm text-muted-foreground/80 font-medium">
-            <span className="flex items-center justify-center gap-1.5"><Check className="w-4 h-4 text-[#DA7756]" /> {t.heroBullet1}</span>
-            <span className="flex items-center justify-center gap-1.5"><Check className="w-4 h-4 text-[#DA7756]" /> {t.heroBullet2}</span>
-            <span className="flex items-center justify-center gap-1.5"><Check className="w-4 h-4 text-[#DA7756]" /> {t.heroBullet3}</span>
+            <span className="flex items-center justify-center gap-1.5"><Check className="w-4 h-4 text-[#DA7756]" aria-hidden="true" /> {t.heroBullet1}</span>
+            <span className="flex items-center justify-center gap-1.5"><Check className="w-4 h-4 text-[#DA7756]" aria-hidden="true" /> {t.heroBullet2}</span>
+            <span className="flex items-center justify-center gap-1.5"><Check className="w-4 h-4 text-[#DA7756]" aria-hidden="true" /> {t.heroBullet3}</span>
           </div>
         </div>
 
         {/* Upload Section */}
         <section className="max-w-2xl mx-auto relative group">
-          <div className="absolute -inset-1 bg-gradient-to-r from-gray-100 via-[#DA7756]/10 to-gray-100 rounded-xl blur opacity-25 group-hover:opacity-50 transition duration-1000"></div>
+          <div className="absolute -inset-1 bg-[#DA7756]/5 rounded-xl blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
           <div className="relative">
             <UploadZone onFileSelected={handleFileSelect} isLoading={isProcessing} lang={lang} />
           </div>
-          {uploadError && (
+          {/* rendering-conditional-render: use ternary instead of && */}
+          {uploadError ? (
             <div className="mt-6 p-4 bg-red-50 text-red-700/80 rounded-lg text-sm text-center border border-red-100 shadow-sm animate-in fade-in slide-in-from-top-2">
               {uploadError}
             </div>
-          )}
+          ) : null}
         </section>
 
         {/* Instructions / Privacy Note */}
-        {citations.length === 0 && (
+        {citations.length === 0 ? (
           <div className="max-w-3xl mx-auto text-center space-y-2">
             <p className="text-[11px] text-muted-foreground/60 leading-relaxed font-normal border-t border-[#E5E2DD] pt-8 inline-block px-4 sm:px-12 max-w-2xl">
               {t.privacy} <Link href={`/${lang}/disclaimer`} className="underline hover:text-muted-foreground transition-colors ml-1">{t.disclaimerLink}</Link>
             </p>
           </div>
-        )}
+        ) : null}
 
         {/* Results Section */}
-        {citations.length > 0 && (
+        {citations.length > 0 ? (
           <section className="space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-700 ease-out fill-mode-backwards">
             {/* Warning Banner */}
-            {notFoundCount > 0 && (
+            {notFoundCount > 0 ? (
               <div className="max-w-3xl mx-auto">
                 <WarningBanner count={notFoundCount} lang={lang} />
               </div>
-            )}
+            ) : null}
 
             <CitationCardList
               citations={citations}
@@ -303,7 +314,7 @@ export default function Home({ params }: { params: Promise<{ lang: string }> }) 
               </button>
             </div>
           </section>
-        )}
+        ) : null}
       </div>
     </main>
   );
