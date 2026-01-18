@@ -52,7 +52,7 @@ export const translations = {
         status: "Status",
         original: "Extracted Info",
         metadata: "Crossref Metadata",
-        privacy: "Privacy Note: PDF parsing is performed locally in your browser and is not uploaded to any server. Only extracted citation text is sent to Crossref and OpenAlex for verification. Safe for unpublished manuscripts.",
+        privacy: "Privacy Note: PDF parsing is performed locally in your browser and is not uploaded to any server. Only extracted citation text, processed via Grobid parsing for better accuracy, is sent to Crossref and OpenAlex. Safe for unpublished manuscripts.",
         sourceWait: "Waiting...",
         sourceNotFound: "Not Found",
         confLow: "Low Confidence",
