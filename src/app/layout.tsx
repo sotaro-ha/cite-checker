@@ -25,6 +25,7 @@ export const metadata: Metadata = {
     "hallucination detector", "fake citation check", "academic integrity", "research tools",
     "Crossref", "OpenAlex", "bibliography check", "manuscript tools"
   ],
+  metadataBase: new URL("https://cite-checker.vercel.app"),
 };
 
 
@@ -40,6 +41,24 @@ export default function RootLayout({
       >
         {children}
         <Toaster />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "SoftwareApplication",
+              "name": "Cite Checker",
+              "applicationCategory": "UtilityApplication",
+              "operatingSystem": "Any",
+              "offers": {
+                "@type": "Offer",
+                "price": "0",
+                "priceCurrency": "USD"
+              },
+              "description": "Free PDF citation verifier. Upload your manuscript to check if references exist using Crossref & OpenAlex.",
+            }),
+          }}
+        />
         <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID || ""} />
       </body>
     </html>
