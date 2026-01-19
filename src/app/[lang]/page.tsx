@@ -11,6 +11,7 @@ const CitationCardList = dynamic(() => import("@/components/citation-card-list")
 });
 import { extractTextFromPDF, extractCitations, Citation } from "@/lib/pdf-parser";
 import { searchCrossref, searchSemanticScholar, searchOpenAlex, calculateConfidence, calculateConfidenceWithBreakdown, SearchResult } from "@/lib/search-api";
+import { HomeContent } from "@/components/home-content";
 import { WarningBanner } from "@/components/warning-banner";
 import { Language, translations } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
@@ -283,6 +284,9 @@ export default function Home({ params }: { params: Promise<{ lang: string }> }) 
             <p className="text-[11px] text-muted-foreground/60 leading-relaxed font-normal border-t border-[#E5E2DD] pt-8 inline-block px-4 sm:px-12 max-w-2xl">
               {t.privacy} <Link href={`/${lang}/disclaimer`} className="underline hover:text-muted-foreground transition-colors ml-1">{t.disclaimerLink}</Link>
             </p>
+
+            {/* Rich Content for AdSense / SEO */}
+            <HomeContent lang={lang} />
           </div>
         ) : null}
 

@@ -33,7 +33,34 @@ export const translations = {
         heroBullet1: "完全ローカル処理: PDFはブラウザで処理されます",
         heroBullet2: "LLMを使わない検証",
         heroBullet3: "PDFを上げるだけで検証",
-        disclaimerLink: "免責事項はこちら"
+        disclaimerLink: "免責事項はこちら",
+
+        // Home Content - How it Works
+        howItWorksTitle: "仕組み",
+        step1Title: "PDFをアップロード",
+        step1Desc: "論文PDFをドラッグ＆ドロップしてください。一般的な論文フォーマットに対応しています。",
+        step2Title: "自動抽出",
+        step2Desc: "ブラウザ内で引用文献リストを瞬時に抽出します。この段階でデータが外部に送信されることはありません。",
+        step3Title: "データベース照合",
+        step3Desc: "抽出された各文献をCrossrefおよびOpenAlexデータベースと照合し、実在性と正確性を確認します。",
+
+        // Home Content - Why Verify
+        whyTitle: "なぜ引用検証が必要なのか？",
+        reason1Title: "AIハルシネーションの検出",
+        reason1Desc: "ChatGPTなどのAIは、もっともらしいが実在しない論文を「捏造」することがあります。これらを即座に見抜きます。",
+        reason2Title: "撤回論文の引用回避",
+        reason2Desc: "撤回された論文を誤って引用することは、研究の信頼性を損ないます。参照文献のステータスを確認しましょう。",
+        reason3Title: "正確性の確保",
+        reason3Desc: "巻号やページ番号の些細な誤りは読者を困惑させます。参考文献リストが完璧であることを保証しましょう。",
+
+        // Home Content - FAQ
+        faqTitle: "よくある質問",
+        faq1Q: "本当に無料ですか？",
+        faq1A: "はい、研究者や学生の方は完全に無料でご利用いただけます。サーバー維持費は最小限の広告収入で賄われています。",
+        faq2Q: "セキュリティは安全ですか？",
+        faq2A: "PDFの解析はすべてお手元のブラウザ内で行われます。ファイルそのものがサーバーにアップロードされることは決してありません。",
+        faq3Q: "「見つかりません」となった場合は？",
+        faq3A: "非常に新しい論文や未出版のもの、あるいは引用の記述ミスの可能性があります。PDF解析エラーの場合もあるため、最終確認はご自身で行ってください。"
     },
     en: {
         title: "Cite Checker",
@@ -67,6 +94,33 @@ export const translations = {
         heroBullet1: "Local Processing: PDFs processed in browser",
         heroBullet2: "No LLM verification",
         heroBullet3: "Just upload PDF to verify",
-        disclaimerLink: "Disclaimer here"
+        disclaimerLink: "Disclaimer here",
+
+        // Home Content - How it Works
+        howItWorksTitle: "How it works",
+        step1Title: "Upload PDF",
+        step1Desc: "Drag & drop your academic paper. We support most standard journal formats.",
+        step2Title: "Auto Extraction",
+        step2Desc: "Our local parser extracts citations instantly. No data leaves your device during this step.",
+        step3Title: "Database Verification",
+        step3Desc: "We cross-ref each citation with Crossref & OpenAlex to verify existence and accuracy.",
+
+        // Home Content - Why Verify
+        whyTitle: "Why verify citations?",
+        reason1Title: "Detect AI Hallucinations",
+        reason1Desc: "AI tools like ChatGPT often invent plausible-sounding but non-existent citations. Verify them instantly.",
+        reason2Title: "Avoid Retracted Papers",
+        reason2Desc: "Accidental citation of retracted work undermines research credibility. Check the status of your references.",
+        reason3Title: "Ensure Accuracy",
+        reason3Desc: "Small errors in volume or page numbers frustrate readers. Ensure your bibliography is perfect.",
+
+        // Home Content - FAQ
+        faqTitle: "Frequently Asked Questions",
+        faq1Q: "Is this tool free?",
+        faq1A: "Yes, Cite Checker is completely free for researchers and students. We are supported by minimal non-intrusive ads.",
+        faq2Q: "Is my research secure?",
+        faq2A: "Your PDF is parsed locally in your browser. We never upload your file to any server. Only extracted citation strings are sent to our verification APIs.",
+        faq3Q: "What if a citation is 'Not Found'?",
+        faq3A: "It may mean the paper is very new, unpublished, or the citation has a typo. It could also just be a parsing error. Always manually verify 'Not Found' items."
     }
 };
