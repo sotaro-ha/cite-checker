@@ -6,6 +6,7 @@ import { GoogleAnalytics } from "@next/third-parties/google";
 import { FeedbackButton } from "@/components/feedback-button";
 import { Language } from "@/lib/i18n";
 import { SiteHeader } from "@/components/site-header";
+import { SiteFooter } from "@/components/site-footer";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -134,6 +135,7 @@ export default async function RootLayout({
       >
         <SiteHeader lang={lang} />
         {children}
+        <SiteFooter lang={lang} />
         <Toaster />
         <FeedbackButton />
         <script

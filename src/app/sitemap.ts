@@ -1,10 +1,11 @@
 import { MetadataRoute } from 'next'
+import { guideList } from '@/lib/guides'
 
 export default function sitemap(): MetadataRoute.Sitemap {
     const baseUrl = 'https://www.citechecker.app'
     const lastModified = new Date()
 
-    return [
+    const staticPages: MetadataRoute.Sitemap = [
         // Root redirect
         {
             url: baseUrl,
@@ -37,6 +38,18 @@ export default function sitemap(): MetadataRoute.Sitemap {
                 },
             },
         },
+        {
+            url: `${baseUrl}/en/guides`,
+            lastModified,
+            changeFrequency: 'weekly',
+            priority: 0.8,
+            alternates: {
+                languages: {
+                    en: `${baseUrl}/en/guides`,
+                    ja: `${baseUrl}/ja/guides`,
+                },
+            },
+        },
         // Japanese pages
         {
             url: `${baseUrl}/ja`,
@@ -62,5 +75,47 @@ export default function sitemap(): MetadataRoute.Sitemap {
                 },
             },
         },
+        {
+            url: `${baseUrl}/ja/guides`,
+            lastModified,
+            changeFrequency: 'weekly',
+            priority: 0.8,
+            alternates: {
+                languages: {
+                    en: `${baseUrl}/en/guides`,
+                    ja: `${baseUrl}/ja/guides`,
+                },
+            },
+        },
     ]
+
+    // Add guide pages
+    const guidePages: MetadataRoute.Sitemap = guideList.flatMap(slug => [
+        {
+            url: `${baseUrl}/en/guides/${slug}`,
+            lastModified,
+            changeFrequency: 'monthly' as const,
+            priority: 0.7,
+            alternates: {
+                languages: {
+                    en: `${baseUrl}/en/guides/${slug}`,
+                    ja: `${baseUrl}/ja/guides/${slug}`,
+                },
+            },
+        },
+        {
+            url: `${baseUrl}/ja/guides/${slug}`,
+            lastModified,
+            changeFrequency: 'monthly' as const,
+            priority: 0.7,
+            alternates: {
+                languages: {
+                    en: `${baseUrl}/en/guides/${slug}`,
+                    ja: `${baseUrl}/ja/guides/${slug}`,
+                },
+            },
+        },
+    ])
+
+    return [...staticPages, ...guidePages]
 }
