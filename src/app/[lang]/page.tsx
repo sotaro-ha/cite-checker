@@ -300,22 +300,13 @@ export default function Home({ params }: { params: Promise<{ lang: string }> }) 
                 results={searchResults}
                 detectedStyle={detectedStyle}
                 lang={lang}
+                onReset={() => {
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                  setCitations([]);
+                  setSearchResults({});
+                  setLastUploaded(null);
+                }}
               />
-
-              <div className="flex justify-center pt-8 pb-12">
-                <button
-                  onClick={() => {
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                    setTimeout(() => {
-                      setCitations([]);
-                      setSearchResults({});
-                    }, 500);
-                  }}
-                  className="text-sm text-muted-foreground hover:text-[#DA7756] transition-colors underline underline-offset-4 decoration-muted-foreground/30 hover:decoration-[#DA7756]/50"
-                >
-                  {t.checkAnother}
-                </button>
-              </div>
             </section>
           ) : null}
 

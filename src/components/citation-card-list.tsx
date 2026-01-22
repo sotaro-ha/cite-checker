@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { motion, AnimatePresence } from "motion/react";
-import { CheckCircle2, AlertTriangle, ExternalLink, CornerDownRight, HelpCircle, ArrowUpDown, ArrowUp, ArrowDown, Download, FileText } from "lucide-react";
+import { CheckCircle2, AlertTriangle, ExternalLink, CornerDownRight, HelpCircle, ArrowUpDown, ArrowUp, ArrowDown, Download, FileText, RotateCcw } from "lucide-react";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -53,9 +53,10 @@ interface CitationCardListProps {
     results: Record<string, SearchResult>;
     detectedStyle: string | null;
     lang: Language;
+    onReset?: () => void;
 }
 
-export function CitationCardList({ citations, results, detectedStyle, lang }: CitationCardListProps) {
+export function CitationCardList({ citations, results, detectedStyle, lang, onReset }: CitationCardListProps) {
     const t = translations[lang];
     const [sortMode, setSortMode] = useState<SortMode>("default");
 
@@ -179,6 +180,16 @@ export function CitationCardList({ citations, results, detectedStyle, lang }: Ci
                             </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
+
+                    {onReset && (
+                        <button
+                            onClick={onReset}
+                            className="flex items-center gap-2 px-3 py-1.5 text-xs text-muted-foreground hover:text-foreground border border-gray-200 rounded-md hover:bg-gray-50 transition-colors"
+                        >
+                            <RotateCcw size={14} />
+                            <span>{lang === "ja" ? "最初から" : "Start Over"}</span>
+                        </button>
+                    )}
                 </div>
             </div>
 

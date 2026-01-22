@@ -11,11 +11,21 @@ interface SiteHeaderProps {
 export function SiteHeader({ lang }: SiteHeaderProps) {
     const t = translations[lang];
 
+    const handleLogoClick = (e: React.MouseEvent) => {
+        e.preventDefault();
+        // Force reload to reset all state
+        window.location.href = `/${lang}`;
+    };
+
     return (
         <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-sm border-b border-[#E5E2DD]">
             <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                    <Link href={`/${lang}`} className="text-xl font-sans font-bold text-[#1A1A1A] hover:opacity-80 transition-opacity">
+                    <Link
+                        href={`/${lang}`}
+                        onClick={handleLogoClick}
+                        className="text-xl font-sans font-bold text-[#1A1A1A] hover:opacity-80 transition-opacity"
+                    >
                         {t.title}
                     </Link>
                 </div>
