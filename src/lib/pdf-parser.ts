@@ -200,13 +200,33 @@ export function extractCitations(text: string): Citation[] {
     }
   }
 
-  // Fallback
+  // Fallback: Find a sequence of numbered references (not just a single [1])
   if (startLineIndex === -1) {
-    console.log("⚠️ References header not found, searching for first [1]");
-    for (let i = 0; i < lines.length; i++) {
+    console.log("⚠️ References header not found, searching for numbered sequence");
+    // Look for a cluster of [n] patterns that appear consecutively (within ~10 lines)
+    // This helps distinguish actual reference sections from inline citations
+    for (let i = 0; i < lines.length - 5; i++) {
       if (/^\s*\[\s*1\s*\]/.test(lines[i])) {
-        startLineIndex = i;
-        break;
+        // Check if there are more sequential references nearby
+        let sequentialCount = 1;
+        let lastRefNum = 1;
+        for (let j = i + 1; j < Math.min(i + 30, lines.length); j++) {
+          const match = lines[j].match(/^\s*\[\s*(\d+)\s*\]/);
+          if (match) {
+            const refNum = parseInt(match[1]);
+            // Must be sequential or close (allow gaps for multi-line refs)
+            if (refNum === lastRefNum + 1 || refNum === lastRefNum) {
+              sequentialCount++;
+              lastRefNum = refNum;
+            }
+          }
+        }
+        // Only accept if we found at least 3 sequential references
+        if (sequentialCount >= 3) {
+          startLineIndex = i;
+          console.log(`📚 Found reference sequence starting at line ${i}`);
+          break;
+        }
       }
     }
   }
@@ -340,15 +360,33 @@ export function extractCitations(text: string): Citation[] {
     }
   }
 
+  // 4.5 Filter out body text that was mistakenly captured as citations
+  // Real citations are typically under 600 characters
+  const MAX_CITATION_LENGTH = 600;
+  const filteredCitations = rawCitations.filter(c => {
+    if (c.raw.length > MAX_CITATION_LENGTH) {
+      console.log(`Filtered out long text (${c.raw.length} chars): "${c.raw.substring(0, 50)}..."`);
+      return false;
+    }
+    return true;
+  });
+
+  // If we filtered out many entries at the start, we likely captured body text
+  // Re-number the citations
+  const finalCitations = filteredCitations.map((item, index) => ({
+    ...item,
+    refNum: String(index + 1)
+  }));
+
   // 5. Determine Final Style Name
   let detectedStyle = "Unknown";
   if (useBracket) detectedStyle = "IEEE / Numbered [n]";
   else if (useDot) detectedStyle = "Numbered (n.)";
   else if (isUnnumbered) detectedStyle = "APA / Chicago (Author-Year)";
 
-  // console.log(`📊 Extracted ${rawCitations.length} citations. Style: ${detectedStyle}`);
+  console.log(`📊 Extracted ${finalCitations.length} citations (filtered from ${rawCitations.length}). Style: ${detectedStyle}`);
 
-  return rawCitations.map((item, index) => {
+  return finalCitations.map((item, index) => {
     // Pass detected style to parser
     const c = parseCitation(String(index + 1), item.raw, detectedStyle);
     c.style = detectedStyle;
