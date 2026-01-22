@@ -30,13 +30,15 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
     : "Cite Checker - 論文の引用文献を無料で検証";
 
   const description = isEn
-    ? "Free online citation checker for academic papers. Verify references against Crossref & OpenAlex databases. Detect fake citations, prevent AI hallucinations. Privacy-first: PDF processing runs locally in your browser."
-    : "論文の引用文献を無料でオンライン検証。Crossref・OpenAlexデータベースと照合し、存在しない引用や捏造参考文献を検出。完全ブラウザ処理でプライバシー保護。AIハルシネーション対策に。";
+    ? "Free open-source citation checker. Drop your PDF and verify references against 200M+ papers in Crossref & OpenAlex. Fully local processing - your file never leaves your browser. Detect AI hallucinations and fake citations. CC BY 4.0 licensed."
+    : "無料・オープンソースの引用チェッカー。PDFをドロップするだけで、CrossrefとOpenAlexの2億件以上の論文データベースと照合。完全ローカル処理でファイルはブラウザから出ません。AIハルシネーションや架空引用を検出。CC BY 4.0ライセンス。";
 
   const keywords = isEn
     ? [
         // Primary keywords
         "cite checker", "citation checker", "reference checker", "citation verifier",
+        // PDF feature
+        "PDF citation checker", "PDF reference extractor", "drop PDF verify citations",
         // Academic/research terms
         "academic citation checker", "paper citation checker", "bibliography checker",
         "reference verification", "citation validation", "fake citation detector",
@@ -46,12 +48,16 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
         "Crossref checker", "OpenAlex search", "DOI verifier", "PDF citation extractor",
         // Privacy/trust terms
         "privacy first", "local processing", "no upload", "secure citation checker",
+        // Open source terms
+        "open source citation checker", "CC BY 4.0", "transparent", "GitHub",
         // Free/online terms
         "free citation checker", "online reference checker", "free bibliography tool"
       ]
     : [
         // 主要キーワード
         "cite checker", "引用チェッカー", "引用検証", "参考文献チェック",
+        // PDF機能
+        "PDF 引用チェック", "PDF 参考文献 抽出", "PDFドロップ 引用検証",
         // 学術用語
         "論文 引用 確認", "参考文献 検証", "引用文献 チェック", "文献リスト 確認",
         // 問題解決系
@@ -60,6 +66,8 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
         "Crossref 検索", "OpenAlex 検索", "DOI 確認", "PDF 引用抽出",
         // プライバシー系
         "プライバシー保護", "ローカル処理", "完全ローカル", "ブラウザ内処理",
+        // オープンソース
+        "オープンソース", "CC BY 4.0", "GitHub公開", "透明性",
         // 無料/オンライン
         "無料 引用チェック", "オンライン 文献検証", "引用 無料ツール"
       ];
@@ -158,20 +166,23 @@ export default async function RootLayout({
                     "priceCurrency": "USD"
                   },
                   "description": lang === 'en'
-                    ? "Free online citation checker for academic papers. Verify references against Crossref & OpenAlex databases."
-                    : "論文の引用文献を無料でオンライン検証。Crossref・OpenAlexデータベースと照合。",
+                    ? "Free open-source citation checker. Drop your PDF to verify references against 200M+ papers in Crossref & OpenAlex. Fully local processing - your file never leaves your browser."
+                    : "無料オープンソースの引用チェッカー。PDFをドロップするだけで2億件以上の論文と照合。完全ローカル処理でファイルはブラウザから出ません。",
                   "featureList": [
-                    "PDF citation extraction",
-                    "Crossref database verification",
-                    "OpenAlex database verification",
-                    "Privacy-first local processing",
-                    "No account required"
+                    "Direct PDF citation extraction",
+                    "200M+ papers in Crossref & OpenAlex",
+                    "Fully local browser processing",
+                    "Open source (CC BY 4.0)",
+                    "No account required",
+                    "AI hallucination detection"
                   ],
+                  "license": "https://creativecommons.org/licenses/by/4.0/",
+                  "isAccessibleForFree": true,
                   "screenshot": "https://www.citechecker.app/opengraph-image",
-                  "aggregateRating": {
-                    "@type": "AggregateRating",
-                    "ratingValue": "4.8",
-                    "ratingCount": "50"
+                  "sourceOrganization": {
+                    "@type": "Organization",
+                    "name": "Cite Checker",
+                    "url": "https://github.com/sotaro-ha/cite-checker"
                   }
                 },
                 {
