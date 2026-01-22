@@ -26,12 +26,12 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
   const isEn = lang === 'en';
 
   const title = isEn
-    ? "Cite Checker - Free Citation Verifier for Academic Papers"
-    : "Cite Checker - 論文の引用文献を無料で検証";
+    ? "Cite Checker - Free Citation Verifier | No Login Required"
+    : "Cite Checker - 無料・登録不要の引用検証ツール";
 
   const description = isEn
-    ? "Free open-source citation checker. Drop your PDF and verify references against 200M+ papers in Crossref & OpenAlex. Fully local processing - your file never leaves your browser. Detect AI hallucinations and fake citations. CC BY 4.0 licensed."
-    : "無料・オープンソースの引用チェッカー。PDFをドロップするだけで、CrossrefとOpenAlexの2億件以上の論文データベースと照合。完全ローカル処理でファイルはブラウザから出ません。AIハルシネーションや架空引用を検出。CC BY 4.0ライセンス。";
+    ? "100% free, no login required. Drop your PDF and instantly verify citations against 200M+ papers in Crossref & OpenAlex. Your file never leaves your browser. Detect AI hallucinations and fake references in seconds."
+    : "完全無料・登録不要・ログイン不要。PDFをドロップするだけで2億件以上の論文データベースと即座に照合。ブラウザ内処理でファイルは外部送信されません。AIハルシネーションや架空引用を数秒で検出。";
 
   const keywords = isEn
     ? [
@@ -51,7 +51,10 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
         // Open source terms
         "open source citation checker", "CC BY 4.0", "transparent", "GitHub",
         // Free/online terms
-        "free citation checker", "online reference checker", "free bibliography tool"
+        "free citation checker", "online reference checker", "free bibliography tool",
+        // No login terms
+        "no login citation checker", "no signup reference checker", "no registration required",
+        "instant citation check", "no account needed"
       ]
     : [
         // 主要キーワード
@@ -69,7 +72,10 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
         // オープンソース
         "オープンソース", "CC BY 4.0", "GitHub公開", "透明性",
         // 無料/オンライン
-        "無料 引用チェック", "オンライン 文献検証", "引用 無料ツール"
+        "無料 引用チェック", "オンライン 文献検証", "引用 無料ツール",
+        // ログイン不要
+        "ログイン不要", "登録不要", "アカウント不要", "会員登録なし",
+        "すぐ使える 引用チェック", "インストール不要"
       ];
 
   return {
@@ -166,16 +172,27 @@ export default async function RootLayout({
                     "priceCurrency": "USD"
                   },
                   "description": lang === 'en'
-                    ? "Free open-source citation checker. Drop your PDF to verify references against 200M+ papers in Crossref & OpenAlex. Fully local processing - your file never leaves your browser."
-                    : "無料オープンソースの引用チェッカー。PDFをドロップするだけで2億件以上の論文と照合。完全ローカル処理でファイルはブラウザから出ません。",
-                  "featureList": [
-                    "Direct PDF citation extraction",
-                    "200M+ papers in Crossref & OpenAlex",
-                    "Fully local browser processing",
-                    "Open source (CC BY 4.0)",
-                    "No account required",
-                    "AI hallucination detection"
-                  ],
+                    ? "100% free, no login required. Drop your PDF to verify citations against 200M+ papers. Your file never leaves your browser."
+                    : "完全無料・登録不要。PDFをドロップするだけで2億件以上の論文と照合。ファイルはブラウザから出ません。",
+                  "featureList": lang === 'en'
+                    ? [
+                        "100% free - no hidden costs",
+                        "No login or signup required",
+                        "Instant PDF citation extraction",
+                        "200M+ papers in Crossref & OpenAlex",
+                        "Fully local browser processing",
+                        "AI hallucination detection",
+                        "Open source (CC BY 4.0)"
+                      ]
+                    : [
+                        "完全無料 - 隠れたコストなし",
+                        "ログイン・登録不要",
+                        "PDFから即座に引用抽出",
+                        "2億件以上の論文データベース",
+                        "ブラウザ内完結処理",
+                        "AIハルシネーション検出",
+                        "オープンソース (CC BY 4.0)"
+                      ],
                   "license": "https://creativecommons.org/licenses/by/4.0/",
                   "isAccessibleForFree": true,
                   "screenshot": "https://www.citechecker.app/opengraph-image",
