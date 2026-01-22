@@ -1,7 +1,7 @@
 "use client";
 
 import { Language } from "@/lib/i18n";
-import { FileText, Shield, Github } from "lucide-react";
+import { FileText, Shield, Github, Database, Zap, Lock } from "lucide-react";
 import Link from "next/link";
 
 interface HomeContentProps {
@@ -12,68 +12,153 @@ export function HomeContent({ lang }: HomeContentProps) {
     const isJa = lang === "ja";
 
     const content = {
-        tagline: isJa
-            ? "学術論文の引用文献を、安全かつ簡単に検証"
-            : "Verify academic citations safely and easily",
+        // Section 1: What is Cite Checker
+        whatIsTitle: isJa ? "Cite Checkerとは" : "What is Cite Checker?",
+        whatIsDesc: isJa
+            ? "Cite Checkerは、学術論文の参考文献を自動で検証する無料のオープンソースツールです。PDFをアップロードするだけで、引用文献リストを自動抽出し、CrossrefとOpenAlexの2億件以上の学術データベースと照合します。AIが生成した架空の引用（ハルシネーション）や、記載ミスのある参考文献を投稿前に発見できます。"
+            : "Cite Checker is a free, open-source tool that automatically verifies references in academic papers. Simply upload your PDF, and we'll extract citations and cross-check them against over 200 million records in Crossref and OpenAlex databases. Catch AI-generated fake citations (hallucinations) and bibliographic errors before submission.",
+
+        // Section 2: Key Features
+        featuresTitle: isJa ? "主な特徴" : "Key Features",
         features: [
             {
                 icon: FileText,
                 title: isJa ? "PDFから直接検証" : "Direct PDF Verification",
                 desc: isJa
-                    ? "PDFをドロップするだけ。面倒な手入力は不要。引用リストを自動抽出し、CrossrefとOpenAlexの2億件以上のデータベースと照合します。"
-                    : "Just drop your PDF. No manual entry needed. We auto-extract citations and cross-check against 200M+ records in Crossref and OpenAlex.",
+                    ? "PDFをドロップするだけ。面倒な手入力は不要です。引用リストを自動抽出し、即座に検証を開始します。"
+                    : "Just drop your PDF. No manual entry needed. We auto-extract your reference list and start verification instantly.",
+            },
+            {
+                icon: Database,
+                title: isJa ? "2億件以上のデータベース" : "200M+ Database Records",
+                desc: isJa
+                    ? "CrossrefとOpenAlexの2つの主要学術データベースと照合。高い精度で引用の実在性を確認します。"
+                    : "Cross-reference against two major academic databases: Crossref and OpenAlex. Verify citation existence with high accuracy.",
+            },
+            {
+                icon: Lock,
+                title: isJa ? "完全ローカル処理" : "Fully Local Processing",
+                desc: isJa
+                    ? "PDFの解析はすべてブラウザ内で完結。ファイルがサーバーにアップロードされることはありません。"
+                    : "All PDF parsing happens in your browser. Your file never leaves your device. Safe for confidential research.",
+            },
+            {
+                icon: Zap,
+                title: isJa ? "高速な検証" : "Fast Verification",
+                desc: isJa
+                    ? "並列処理により、数十件の引用も数秒から1分程度で検証完了。結果はリアルタイムで表示されます。"
+                    : "Parallel processing verifies dozens of citations in seconds to a minute. Results appear in real-time as they're found.",
             },
             {
                 icon: Shield,
-                title: isJa ? "完全ローカル処理" : "Fully Local Processing",
+                title: isJa ? "プライバシー保護" : "Privacy Protected",
                 desc: isJa
-                    ? "PDFの解析はすべてブラウザ内で完結。ファイルがサーバーにアップロードされることはありません。査読前の論文でも安心してご利用いただけます。"
-                    : "All PDF parsing happens in your browser. Your file never leaves your device. Safe for unpublished manuscripts and confidential research.",
+                    ? "査読前の論文でも安心。送信されるのは抽出された引用テキストのみで、PDFファイル自体は一切外部に出ません。"
+                    : "Safe for unpublished manuscripts. Only extracted citation text is sent for verification—your PDF stays local.",
             },
             {
                 icon: Github,
                 title: isJa ? "オープンソース" : "Open Source",
                 desc: isJa
-                    ? "ソースコードはGitHubで公開中。CC BY 4.0ライセンスのもと、誰でも自由に利用・改変できます。透明性と信頼性を重視しています。"
-                    : "Source code is public on GitHub under CC BY 4.0 license. Free to use, modify, and share. We prioritize transparency and trust.",
-                link: "https://github.com/sotaro-ha/cite-checker",
-                linkText: isJa ? "GitHubで見る" : "View on GitHub",
+                    ? "ソースコードはGitHubで公開中。CC BY 4.0ライセンスで、誰でも自由に利用・改変できます。"
+                    : "Source code is public on GitHub under CC BY 4.0. Free to use, modify, and share.",
             },
         ],
+
+        // Section 3: Use Cases
+        useCasesTitle: isJa ? "こんな方におすすめ" : "Who Should Use This?",
+        useCases: [
+            {
+                title: isJa ? "論文執筆中の研究者" : "Researchers Writing Papers",
+                desc: isJa
+                    ? "投稿前に参考文献リストの正確性を確認。査読での指摘を未然に防ぎます。"
+                    : "Verify your reference list before submission. Prevent reviewer comments about incorrect citations.",
+            },
+            {
+                title: isJa ? "AIツールを使う方" : "AI Tool Users",
+                desc: isJa
+                    ? "ChatGPTやClaudeが生成した引用文献が実在するかチェック。ハルシネーション対策に。"
+                    : "Check if citations generated by ChatGPT or Claude actually exist. Essential for AI hallucination prevention.",
+            },
+            {
+                title: isJa ? "学生・大学院生" : "Students & Graduate Students",
+                desc: isJa
+                    ? "卒論・修論の参考文献を効率的に検証。正確な引用で論文の質を向上させます。"
+                    : "Efficiently verify references for your thesis. Improve paper quality with accurate citations.",
+            },
+        ],
+
+        // GitHub link
+        githubLink: "https://github.com/sotaro-ha/cite-checker",
+        githubText: isJa ? "GitHubでソースを見る" : "View Source on GitHub",
+
+        // Guides link
+        guidesTitle: isJa ? "もっと詳しく" : "Learn More",
+        guidesDesc: isJa
+            ? "引用検証やAIハルシネーションについて詳しく知りたい方は、ガイド記事をご覧ください。"
+            : "Want to learn more about citation verification and AI hallucination? Check out our guide articles.",
+        guidesLink: isJa ? "ガイド記事を読む" : "Read Our Guides",
     };
 
     return (
-        <section className="pt-16 pb-8">
-            {/* Tagline */}
-            <p className="text-center text-lg text-muted-foreground font-light mb-16">
-                {content.tagline}
-            </p>
+        <div className="space-y-16">
+            {/* What is Cite Checker */}
+            <section className="text-center max-w-3xl mx-auto">
+                <h2 className="text-2xl font-bold text-[#1A1A1A] mb-4">{content.whatIsTitle}</h2>
+                <p className="text-muted-foreground leading-relaxed">{content.whatIsDesc}</p>
+            </section>
 
-            {/* Features */}
-            <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-                {content.features.map((feature, i) => (
-                    <div key={i} className="text-center space-y-4">
-                        <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-[#DA7756]/10 text-[#DA7756]">
-                            <feature.icon size={24} />
+            {/* Key Features */}
+            <section>
+                <h2 className="text-2xl font-bold text-[#1A1A1A] text-center mb-10">{content.featuresTitle}</h2>
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    {content.features.map((feature, i) => (
+                        <div key={i} className="space-y-3">
+                            <div className="flex items-center gap-3">
+                                <div className="flex-shrink-0 w-10 h-10 rounded-full bg-[#DA7756]/10 flex items-center justify-center text-[#DA7756]">
+                                    <feature.icon size={20} />
+                                </div>
+                                <h3 className="font-bold text-[#1A1A1A]">{feature.title}</h3>
+                            </div>
+                            <p className="text-sm text-muted-foreground leading-relaxed pl-13">
+                                {feature.desc}
+                            </p>
                         </div>
-                        <h3 className="font-bold text-[#1A1A1A]">{feature.title}</h3>
-                        <p className="text-sm text-muted-foreground leading-relaxed">
-                            {feature.desc}
-                        </p>
-                        {feature.link && (
-                            <Link
-                                href={feature.link}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="inline-flex items-center gap-1.5 text-sm text-[#DA7756] hover:underline"
-                            >
-                                <Github size={14} />
-                                {feature.linkText}
-                            </Link>
-                        )}
-                    </div>
-                ))}
-            </div>
-        </section>
+                    ))}
+                </div>
+            </section>
+
+            {/* Use Cases */}
+            <section className="bg-white rounded-2xl p-8 border border-gray-100">
+                <h2 className="text-2xl font-bold text-[#1A1A1A] text-center mb-8">{content.useCasesTitle}</h2>
+                <div className="grid md:grid-cols-3 gap-6">
+                    {content.useCases.map((useCase, i) => (
+                        <div key={i} className="text-center space-y-2">
+                            <h3 className="font-bold text-[#1A1A1A]">{useCase.title}</h3>
+                            <p className="text-sm text-muted-foreground leading-relaxed">{useCase.desc}</p>
+                        </div>
+                    ))}
+                </div>
+            </section>
+
+            {/* Links */}
+            <section className="flex flex-col sm:flex-row items-center justify-center gap-6 pt-4">
+                <Link
+                    href={content.githubLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-[#DA7756] transition-colors"
+                >
+                    <Github size={18} />
+                    {content.githubText}
+                </Link>
+                <Link
+                    href={`/${lang}/guides`}
+                    className="inline-flex items-center gap-2 text-sm font-medium text-[#DA7756] hover:underline"
+                >
+                    {content.guidesLink} →
+                </Link>
+            </section>
+        </div>
     );
 }

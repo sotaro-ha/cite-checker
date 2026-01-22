@@ -246,52 +246,60 @@ export default function Home({ params }: { params: Promise<{ lang: string }> }) 
   );
 
   return (
-    <main className="min-h-dvh bg-white text-slate-800 font-sans selection:bg-[#DA7756]/20">
-      <div className="max-w-4xl mx-auto px-6 py-12 space-y-12">
-        {/* Hero Section */}
-        <div className="text-center space-y-4 pt-4">
-          <h1 className="text-4xl md:text-5xl font-sans font-bold text-[#1A1A1A] leading-tight text-balance">
-            {t.subtitle}
-          </h1>
-          <p className="text-muted-foreground text-lg max-w-xl mx-auto font-light leading-relaxed text-pretty">
-            {t.description}
-          </p>
-
-          <div className="pt-4 flex flex-col sm:flex-row justify-center gap-3 sm:gap-6 text-sm text-muted-foreground/80 font-medium">
-            <span className="flex items-center justify-center gap-1.5"><Check className="w-4 h-4 text-[#DA7756]" aria-hidden="true" /> {t.heroBullet1}</span>
-            <span className="flex items-center justify-center gap-1.5"><Check className="w-4 h-4 text-[#DA7756]" aria-hidden="true" /> {t.heroBullet2}</span>
-            <span className="flex items-center justify-center gap-1.5"><Check className="w-4 h-4 text-[#DA7756]" aria-hidden="true" /> {t.heroBullet3}</span>
-          </div>
-        </div>
-
-        {/* Upload Section */}
-        <section className="max-w-2xl mx-auto relative group">
-          <div className="absolute -inset-1 bg-[#DA7756]/5 rounded-xl blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
-          <div className="relative">
-            <UploadZone onFileSelected={handleFileSelect} isLoading={isProcessing} lang={lang} />
-          </div>
-          {/* rendering-conditional-render: use ternary instead of && */}
-          {uploadError ? (
-            <div className="mt-6 p-4 bg-red-50 text-red-700/80 rounded-lg text-sm text-center border border-red-100 shadow-sm animate-in fade-in slide-in-from-top-2">
-              {uploadError}
-            </div>
-          ) : null}
-        </section>
-
-        {/* Instructions / Privacy Note */}
-        {citations.length === 0 ? (
-          <div className="max-w-3xl mx-auto text-center space-y-2">
-            <p className="text-[11px] text-muted-foreground/60 leading-relaxed font-normal border-t border-[#E5E2DD] pt-8 inline-block px-4 sm:px-12 max-w-2xl">
-              {t.privacy} <Link href={`/${lang}/disclaimer`} className="underline hover:text-muted-foreground transition-colors ml-1">{t.disclaimerLink}</Link>
+    <main className="bg-white text-slate-800 font-sans selection:bg-[#DA7756]/20">
+      {/* First View - exactly 100vh */}
+      <div className="min-h-[100dvh] flex flex-col">
+        <div className="flex-1 flex flex-col justify-center max-w-4xl mx-auto px-6 py-8 w-full">
+          {/* Hero Section */}
+          <div className="text-center space-y-4">
+            <h1 className="text-4xl md:text-5xl font-sans font-bold text-[#1A1A1A] leading-tight text-balance">
+              {t.subtitle}
+            </h1>
+            <p className="text-muted-foreground text-lg max-w-xl mx-auto font-light leading-relaxed text-pretty">
+              {t.description}
             </p>
 
-            {/* Rich Content for AdSense / SEO */}
+            <div className="pt-4 flex flex-col sm:flex-row justify-center gap-3 sm:gap-6 text-sm text-muted-foreground/80 font-medium">
+              <span className="flex items-center justify-center gap-1.5"><Check className="w-4 h-4 text-[#DA7756]" aria-hidden="true" /> {t.heroBullet1}</span>
+              <span className="flex items-center justify-center gap-1.5"><Check className="w-4 h-4 text-[#DA7756]" aria-hidden="true" /> {t.heroBullet2}</span>
+              <span className="flex items-center justify-center gap-1.5"><Check className="w-4 h-4 text-[#DA7756]" aria-hidden="true" /> {t.heroBullet3}</span>
+            </div>
+          </div>
+
+          {/* Upload Section */}
+          <section className="max-w-2xl mx-auto relative group mt-8 w-full">
+            <div className="absolute -inset-1 bg-[#DA7756]/5 rounded-xl blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
+            <div className="relative">
+              <UploadZone onFileSelected={handleFileSelect} isLoading={isProcessing} lang={lang} />
+            </div>
+            {uploadError ? (
+              <div className="mt-6 p-4 bg-red-50 text-red-700/80 rounded-lg text-sm text-center border border-red-100 shadow-sm animate-in fade-in slide-in-from-top-2">
+                {uploadError}
+              </div>
+            ) : null}
+          </section>
+
+          {/* Privacy Note - compact */}
+          {citations.length === 0 ? (
+            <p className="text-[11px] text-muted-foreground/60 leading-relaxed font-normal text-center mt-6 px-4 max-w-2xl mx-auto">
+              {t.privacy} <Link href={`/${lang}/disclaimer`} className="underline hover:text-muted-foreground transition-colors ml-1">{t.disclaimerLink}</Link>
+            </p>
+          ) : null}
+        </div>
+      </div>
+
+      {/* Below the fold - Rich Content for AdSense / SEO */}
+      {citations.length === 0 ? (
+        <div className="border-t border-gray-100 bg-gray-50/30">
+          <div className="max-w-4xl mx-auto px-6 py-16">
             <HomeContent lang={lang} />
           </div>
-        ) : null}
+        </div>
+      ) : null}
 
-        {/* Results Section */}
-        {citations.length > 0 ? (
+      {/* Results Section */}
+      {citations.length > 0 ? (
+        <div className="max-w-4xl mx-auto px-6 py-12">
           <section className="space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-700 ease-out fill-mode-backwards">
             {/* Warning Banner */}
             {notFoundCount > 0 ? (
@@ -322,8 +330,8 @@ export default function Home({ params }: { params: Promise<{ lang: string }> }) 
               </button>
             </div>
           </section>
-        ) : null}
-      </div>
+        </div>
+      ) : null}
     </main>
   );
 }

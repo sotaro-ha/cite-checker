@@ -3,7 +3,8 @@ import { guideList } from '@/lib/guides'
 
 export default function sitemap(): MetadataRoute.Sitemap {
     const baseUrl = 'https://www.citechecker.app'
-    const lastModified = new Date()
+    // Use fixed date to avoid unnecessary cache invalidation
+    const lastModified = new Date('2025-01-22')
 
     const staticPages: MetadataRoute.Sitemap = [
         // Root redirect
