@@ -63,17 +63,20 @@ export async function extractTextFromPDF(file: File): Promise<string> {
 
     if (items.length === 0) continue;
 
-    // Detect 2-column layout (Simple Left/Right split)
+    // Detect 2-column layout (Improved detection)
     let leftItems: TextItem[] = [];
     let rightItems: TextItem[] = [];
 
-    // Heuristic: Check density on both sides
+    // Split items by midpoint
     for (const item of items) {
       if (item.x < midX) leftItems.push(item);
       else rightItems.push(item);
     }
 
-    const isTwoColumn = (leftItems.length > items.length * 0.3) && (rightItems.length > items.length * 0.3);
+    // Improved 2-column detection:
+    // Simply check if both sides have a meaningful number of items
+    // Academic papers typically have at least 10 text items per column per page
+    const isTwoColumn = leftItems.length >= 10 && rightItems.length >= 10;
 
     let processGroups: TextItem[][] = [];
 
@@ -190,12 +193,20 @@ export function extractCitations(text: string): Citation[] {
   const lines = processedText.split(/\n/);
   let startLineIndex = -1;
   const refHeaderPattern = /^\s*(?:References|REFERENCES|参考文献|Works Cited|Bibliography|References\s+and\s+Notes)(?:\s|$)/i;
+  // Also match REFERENCES in the middle of a line (common in 2-column PDFs)
+  const refHeaderMidLinePattern = /\s{2,}(?:REFERENCES|References)\s*$/;
 
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
     if (refHeaderPattern.test(line) || /^\s*\d+\.?\s*References\s*$/i.test(line)) {
       startLineIndex = i;
       console.log(`📚 References header found at line ${i}: "${line}"`);
+      break;
+    }
+    // Check for REFERENCES at end of line (merged from 2-column layout)
+    if (refHeaderMidLinePattern.test(line)) {
+      startLineIndex = i;
+      console.log(`📚 References header found mid-line at ${i}: "${line.substring(line.length - 50)}"`);
       break;
     }
   }
@@ -265,6 +276,9 @@ export function extractCitations(text: string): Citation[] {
   const bracketStart = /^\s*\[\s*(\d+)\s*\]\s*(.*)/;
   const dotStart = /^\s*(\d+)\.\s+(.*)/;
 
+  // Pattern to detect end of references section (Appendix, Acknowledgments after refs, etc.)
+  const endOfRefsPattern = /^\s*(?:A(?:PPENDIX)?|B|C|D)(?:\s+|\.\s*)[A-Z][A-Z\s]+|^\s*(?:APPENDIX|Appendix|付録)/;
+
   for (const line of relevantLines) {
     // Check for Blank Line (separator)
     const isBlank = !line.trim();
@@ -286,6 +300,20 @@ export function extractCitations(text: string): Citation[] {
     let content = "";
 
     const trimmed = line.trim();
+
+    // Check if we've hit the end of references (e.g., Appendix section)
+    if (endOfRefsPattern.test(trimmed)) {
+      console.log(`📍 End of references detected: "${trimmed.substring(0, 50)}"`);
+      // Commit current citation before breaking
+      if (currentRefNum && currentRawLines.length > 0) {
+        const raw = currentRawLines.join(" ").trim();
+        if (raw.length > 10) {
+          rawCitations.push({ refNum: currentRefNum, raw });
+        }
+      }
+      currentRefNum = null; // Clear to prevent double-commit after loop
+      break;
+    }
 
     if (useBracket) {
       match = line.match(bracketStart);
@@ -361,8 +389,8 @@ export function extractCitations(text: string): Citation[] {
   }
 
   // 4.5 Filter out body text that was mistakenly captured as citations
-  // Real citations are typically under 600 characters
-  const MAX_CITATION_LENGTH = 600;
+  // Real citations are typically under 700 characters (some have page headers merged)
+  const MAX_CITATION_LENGTH = 700;
   const filteredCitations = rawCitations.filter(c => {
     if (c.raw.length > MAX_CITATION_LENGTH) {
       console.log(`Filtered out long text (${c.raw.length} chars): "${c.raw.substring(0, 50)}..."`);
