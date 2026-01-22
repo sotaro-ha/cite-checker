@@ -247,9 +247,15 @@ export default function Home({ params }: { params: Promise<{ lang: string }> }) 
 
   return (
     <main className="bg-white text-slate-800 font-sans selection:bg-[#DA7756]/20">
-      {/* First View - exactly 100vh */}
-      <div className="min-h-[100dvh] flex flex-col">
-        <div className="flex-1 flex flex-col justify-center max-w-4xl mx-auto px-6 py-8 w-full">
+      {/* First View - 100vh only when no citations */}
+      <div className={cn(
+        "flex flex-col",
+        citations.length === 0 && "min-h-[100dvh]"
+      )}>
+        <div className={cn(
+          "flex flex-col max-w-4xl mx-auto px-6 py-8 w-full",
+          citations.length === 0 && "flex-1 justify-center"
+        )}>
           {/* Hero Section */}
           <div className="text-center space-y-4">
             <h1 className="text-4xl md:text-5xl font-sans font-bold text-[#1A1A1A] leading-tight text-balance">
@@ -279,7 +285,41 @@ export default function Home({ params }: { params: Promise<{ lang: string }> }) 
             ) : null}
           </section>
 
-          {/* Privacy Note - compact */}
+          {/* Results Section - directly below upload */}
+          {citations.length > 0 ? (
+            <section className="mt-12 space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-700 ease-out fill-mode-backwards">
+              {/* Warning Banner */}
+              {notFoundCount > 0 ? (
+                <div className="max-w-3xl mx-auto">
+                  <WarningBanner count={notFoundCount} lang={lang} />
+                </div>
+              ) : null}
+
+              <CitationCardList
+                citations={citations}
+                results={searchResults}
+                detectedStyle={detectedStyle}
+                lang={lang}
+              />
+
+              <div className="flex justify-center pt-8 pb-12">
+                <button
+                  onClick={() => {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                    setTimeout(() => {
+                      setCitations([]);
+                      setSearchResults({});
+                    }, 500);
+                  }}
+                  className="text-sm text-muted-foreground hover:text-[#DA7756] transition-colors underline underline-offset-4 decoration-muted-foreground/30 hover:decoration-[#DA7756]/50"
+                >
+                  {t.checkAnother}
+                </button>
+              </div>
+            </section>
+          ) : null}
+
+          {/* Privacy Note - only when no citations */}
           {citations.length === 0 ? (
             <p className="text-[11px] text-muted-foreground/60 leading-relaxed font-normal text-center mt-6 px-4 max-w-2xl mx-auto">
               {t.privacy} <Link href={`/${lang}/disclaimer`} className="underline hover:text-muted-foreground transition-colors ml-1">{t.disclaimerLink}</Link>
@@ -294,42 +334,6 @@ export default function Home({ params }: { params: Promise<{ lang: string }> }) 
           <div className="max-w-4xl mx-auto px-6 py-16">
             <HomeContent lang={lang} />
           </div>
-        </div>
-      ) : null}
-
-      {/* Results Section */}
-      {citations.length > 0 ? (
-        <div className="max-w-4xl mx-auto px-6 py-12">
-          <section className="space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-700 ease-out fill-mode-backwards">
-            {/* Warning Banner */}
-            {notFoundCount > 0 ? (
-              <div className="max-w-3xl mx-auto">
-                <WarningBanner count={notFoundCount} lang={lang} />
-              </div>
-            ) : null}
-
-            <CitationCardList
-              citations={citations}
-              results={searchResults}
-              detectedStyle={detectedStyle}
-              lang={lang}
-            />
-
-            <div className="flex justify-center pt-8 pb-12">
-              <button
-                onClick={() => {
-                  window.scrollTo({ top: 0, behavior: 'smooth' });
-                  setTimeout(() => {
-                    setCitations([]);
-                    setSearchResults({});
-                  }, 500);
-                }}
-                className="text-sm text-muted-foreground hover:text-[#DA7756] transition-colors underline underline-offset-4 decoration-muted-foreground/30 hover:decoration-[#DA7756]/50"
-              >
-                {t.checkAnother}
-              </button>
-            </div>
-          </section>
         </div>
       ) : null}
     </main>
