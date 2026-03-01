@@ -1,5 +1,6 @@
 import { MetadataRoute } from 'next'
 import { guideList } from '@/lib/guides'
+import { getBlogSlugs } from '@/lib/blog'
 
 export default function sitemap(): MetadataRoute.Sitemap {
     const baseUrl = 'https://www.citechecker.app'
@@ -118,5 +119,62 @@ export default function sitemap(): MetadataRoute.Sitemap {
         },
     ])
 
-    return [...staticPages, ...guidePages]
+    // Add blog pages
+    const blogSlugs = getBlogSlugs()
+    const blogPages: MetadataRoute.Sitemap = [
+        // Blog index pages
+        {
+            url: `${baseUrl}/en/blog`,
+            lastModified,
+            changeFrequency: 'weekly' as const,
+            priority: 0.8,
+            alternates: {
+                languages: {
+                    en: `${baseUrl}/en/blog`,
+                    ja: `${baseUrl}/ja/blog`,
+                },
+            },
+        },
+        {
+            url: `${baseUrl}/ja/blog`,
+            lastModified,
+            changeFrequency: 'weekly' as const,
+            priority: 0.8,
+            alternates: {
+                languages: {
+                    en: `${baseUrl}/en/blog`,
+                    ja: `${baseUrl}/ja/blog`,
+                },
+            },
+        },
+        // Individual blog posts
+        ...blogSlugs.flatMap(slug => [
+            {
+                url: `${baseUrl}/en/blog/${slug}`,
+                lastModified,
+                changeFrequency: 'monthly' as const,
+                priority: 0.7,
+                alternates: {
+                    languages: {
+                        en: `${baseUrl}/en/blog/${slug}`,
+                        ja: `${baseUrl}/ja/blog/${slug}`,
+                    },
+                },
+            },
+            {
+                url: `${baseUrl}/ja/blog/${slug}`,
+                lastModified,
+                changeFrequency: 'monthly' as const,
+                priority: 0.7,
+                alternates: {
+                    languages: {
+                        en: `${baseUrl}/en/blog/${slug}`,
+                        ja: `${baseUrl}/ja/blog/${slug}`,
+                    },
+                },
+            },
+        ]),
+    ]
+
+    return [...staticPages, ...guidePages, ...blogPages]
 }

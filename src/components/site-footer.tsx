@@ -10,6 +10,7 @@ interface SiteFooterProps {
 export function SiteFooter({ lang }: SiteFooterProps) {
     const t = {
         guides: lang === "ja" ? "ガイド" : "Guides",
+        blog: lang === "ja" ? "ブログ" : "Blog",
         disclaimer: lang === "ja" ? "免責事項" : "Disclaimer",
         copyright: `© ${new Date().getFullYear()} Cite Checker`,
     };
@@ -27,6 +28,12 @@ export function SiteFooter({ lang }: SiteFooterProps) {
                             className="text-sm text-muted-foreground hover:text-[#DA7756] transition-colors"
                         >
                             {t.guides}
+                        </Link>
+                        <Link
+                            href={`/${lang}/blog`}
+                            className="text-sm text-muted-foreground hover:text-[#DA7756] transition-colors"
+                        >
+                            {t.blog}
                         </Link>
                         <Link
                             href={`/${lang}/disclaimer`}

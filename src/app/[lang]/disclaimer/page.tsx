@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Language } from "@/lib/i18n";
+import { Breadcrumbs } from "@/components/breadcrumbs";
 import { use } from "react";
 
 export default function DisclaimerPage({ params }: { params: Promise<{ lang: string }> }) {
@@ -8,6 +9,10 @@ export default function DisclaimerPage({ params }: { params: Promise<{ lang: str
     return (
         <main className="min-h-dvh bg-white text-slate-800 font-sans selection:bg-[#DA7756]/20 py-12 px-6">
             <div className="max-w-2xl mx-auto space-y-10">
+                <Breadcrumbs
+                    lang={lang}
+                    items={[{ label: lang === "ja" ? "免責事項" : "Disclaimer" }]}
+                />
                 {lang === 'ja' ? (
                     <article className="space-y-8">
                         <h1 className="text-3xl font-bold text-[#1A1A1A] text-balance">免責事項・利用規約</h1>

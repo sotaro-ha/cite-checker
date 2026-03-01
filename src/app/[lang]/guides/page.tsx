@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { Language } from "@/lib/i18n";
 import { guides, guideList } from "@/lib/guides";
-import { ArrowLeft, BookOpen, Calendar } from "lucide-react";
+import { Breadcrumbs } from "@/components/breadcrumbs";
+import { BookOpen, Calendar } from "lucide-react";
 import type { Metadata } from "next";
 
 interface PageProps {
@@ -35,23 +36,16 @@ export default async function GuidesPage({ params }: PageProps) {
         subtitle: language === "ja"
             ? "引用検証と学術論文作成に役立つ情報"
             : "Helpful resources for citation verification and academic writing",
-        backToHome: language === "ja" ? "ホームに戻る" : "Back to Home",
         readMore: language === "ja" ? "続きを読む" : "Read more",
         readingTime: language === "ja" ? "読了時間" : "Reading time",
         minutes: language === "ja" ? "分" : "min",
+        guides: language === "ja" ? "ガイド" : "Guides",
     };
 
     return (
         <main className="min-h-screen bg-white text-slate-800 font-sans selection:bg-[#DA7756]/20">
             <div className="max-w-4xl mx-auto px-6 py-12">
-                {/* Back link */}
-                <Link
-                    href={`/${language}`}
-                    className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-[#DA7756] transition-colors mb-8"
-                >
-                    <ArrowLeft size={16} />
-                    {t.backToHome}
-                </Link>
+                <Breadcrumbs lang={language} items={[{ label: t.guides }]} />
 
                 {/* Header */}
                 <header className="text-center space-y-4 mb-12">
