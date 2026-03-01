@@ -78,7 +78,16 @@ export const translations = {
         faq11Q: "商用利用は可能ですか？",
         faq11A: "個人の研究目的での利用は自由です。組織や企業での大規模な利用については、お問い合わせください。APIの提供も検討中です。",
         faq12Q: "解析結果を保存・エクスポートできますか？",
-        faq12A: "はい、検証結果をCSV形式またはBibTeX形式でエクスポートできます。検証完了後に表示されるエクスポートボタンからダウンロード可能です。"
+        faq12A: "はい、検証結果をCSV形式またはBibTeX形式でエクスポートできます。検証完了後に表示されるエクスポートボタンからダウンロード可能です。",
+
+        // Blog
+        blog: "ブログ",
+        blogSubtitle: "引用検証と学術論文作成に役立つ記事",
+        readMore: "続きを読む",
+        readingTimeLabel: "読了",
+        minutesLabel: "分",
+        tags: "タグ",
+        relatedArticles: "関連記事",
     },
     en: {
         title: "Cite Checker",
@@ -157,6 +166,15 @@ export const translations = {
         faq11Q: "Can I use this for commercial purposes?",
         faq11A: "Personal research use is free. For large-scale organizational or commercial use, please contact us. API access is also under consideration.",
         faq12Q: "Can I save or export the results?",
-        faq12A: "Yes, you can export verification results in CSV or BibTeX format. Download buttons appear after verification completes."
+        faq12A: "Yes, you can export verification results in CSV or BibTeX format. Download buttons appear after verification completes.",
+
+        // Blog
+        blog: "Blog",
+        blogSubtitle: "Articles on citation verification and academic writing",
+        readMore: "Read more",
+        readingTimeLabel: "read",
+        minutesLabel: "min",
+        tags: "Tags",
+        relatedArticles: "Related Articles",
     }
 };

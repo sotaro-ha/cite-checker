@@ -4,7 +4,7 @@ export default function robots(): MetadataRoute.Robots {
     return {
         rules: [
             {
-                userAgent: ['Googlebot', 'Googlebot-Image', 'Googlebot-Video', 'Bingbot'],
+                userAgent: ['Googlebot', 'Googlebot-Image', 'Googlebot-Video', 'Mediapartners-Google', 'AdsBot-Google', 'Bingbot'],
                 allow: '/',
             },
             {

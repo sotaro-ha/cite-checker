@@ -1,10 +1,11 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Language } from "@/lib/i18n";
-import { guides, guideList, GuideSlug } from "@/lib/guides";
+import { getBlogPost, getBlogPosts, getBlogSlugs } from "@/lib/blog";
+import { guides, GuideSlug } from "@/lib/guides";
 import { parseMarkdown } from "@/lib/markdown";
 import { Breadcrumbs } from "@/components/breadcrumbs";
-import { Calendar, BookOpen } from "lucide-react";
+import { Calendar, BookOpen, Tag, User } from "lucide-react";
 import type { Metadata } from "next";
 
 interface PageProps {
@@ -12,9 +13,10 @@ interface PageProps {
 }
 
 export async function generateStaticParams() {
+    const slugs = getBlogSlugs();
     const paths: { lang: string; slug: string }[] = [];
     for (const lang of ["ja", "en"]) {
-        for (const slug of guideList) {
+        for (const slug of slugs) {
             paths.push({ lang, slug });
         }
     }
@@ -23,44 +25,49 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
     const { lang, slug } = await params;
-    const guide = guides[slug as GuideSlug];
+    const post = getBlogPost(slug, lang as Language);
 
-    if (!guide) {
+    if (!post) {
         return { title: "Not Found" };
     }
 
-    const content = guide[lang as Language] || guide.en;
-
     return {
-        title: `${content.title} | Cite Checker`,
-        description: content.description,
+        title: `${post.title} | Cite Checker`,
+        description: post.description,
     };
 }
 
-export default async function GuidePage({ params }: PageProps) {
+export default async function BlogPostPage({ params }: PageProps) {
     const { lang, slug } = await params;
     const language = lang as Language;
+    const post = getBlogPost(slug, language);
 
-    const guide = guides[slug as GuideSlug];
-
-    if (!guide) {
+    if (!post) {
         notFound();
     }
 
-    const content = guide[language] || guide.en;
-
     const t = {
+        blog: language === "ja" ? "ブログ" : "Blog",
         readingTime: language === "ja" ? "読了時間" : "Reading time",
         minutes: language === "ja" ? "分" : "min",
-        lastUpdated: language === "ja" ? "最終更新" : "Last updated",
         relatedGuides: language === "ja" ? "関連ガイド" : "Related Guides",
-        guides: language === "ja" ? "ガイド" : "Guides",
+        relatedPosts: language === "ja" ? "関連記事" : "Related Articles",
     };
 
-    // Calculate reading time (approx 400 chars per minute for Japanese, 200 words for English)
-    const readingTime = language === "ja"
-        ? Math.ceil(content.content.length / 400)
-        : Math.ceil(content.content.split(/\s+/).length / 200);
+    // Get related guide content
+    const relatedGuideItems = post.relatedGuides
+        .filter(slug => slug in guides)
+        .map(slug => {
+            const guide = guides[slug as GuideSlug];
+            const content = guide[language] || guide.en;
+            return { slug, title: content.title, description: content.description };
+        });
+
+    // Get other blog posts (excluding current)
+    const allPosts = getBlogPosts(language);
+    const relatedPosts = allPosts
+        .filter(p => p.slug !== slug)
+        .slice(0, 3);
 
     return (
         <main className="min-h-screen bg-white text-slate-800 font-sans selection:bg-[#DA7756]/20">
@@ -68,8 +75,8 @@ export default async function GuidePage({ params }: PageProps) {
                 <Breadcrumbs
                     lang={language}
                     items={[
-                        { label: t.guides, href: `/${language}/guides` },
-                        { label: content.title },
+                        { label: t.blog, href: `/${language}/blog` },
+                        { label: post.title },
                     ]}
                 />
 
@@ -77,21 +84,38 @@ export default async function GuidePage({ params }: PageProps) {
                 <article className="space-y-8">
                     <header className="space-y-4 border-b border-gray-100 pb-8">
                         <h1 className="text-3xl md:text-4xl font-bold text-[#1A1A1A] leading-tight">
-                            {content.title}
+                            {post.title}
                         </h1>
                         <p className="text-lg text-muted-foreground leading-relaxed">
-                            {content.description}
+                            {post.description}
                         </p>
                         <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
                             <span className="flex items-center gap-1.5">
+                                <User size={14} />
+                                {post.author}
+                            </span>
+                            <span className="flex items-center gap-1.5">
                                 <BookOpen size={14} />
-                                {t.readingTime}: {readingTime}{t.minutes}
+                                {t.readingTime}: {post.readingTime}{t.minutes}
                             </span>
                             <span className="flex items-center gap-1.5">
                                 <Calendar size={14} />
-                                {t.lastUpdated}: {content.lastUpdated}
+                                {post.date}
                             </span>
                         </div>
+                        {post.tags.length > 0 && (
+                            <div className="flex flex-wrap gap-2">
+                                {post.tags.map(tag => (
+                                    <span
+                                        key={tag}
+                                        className="inline-flex items-center gap-1 px-2.5 py-1 bg-gray-100 text-xs text-muted-foreground rounded-full"
+                                    >
+                                        <Tag size={10} />
+                                        {tag}
+                                    </span>
+                                ))}
+                            </div>
+                        )}
                     </header>
 
                     {/* Article content */}
@@ -104,35 +128,54 @@ export default async function GuidePage({ params }: PageProps) {
                             prose-a:text-[#DA7756] prose-a:no-underline hover:prose-a:underline
                             prose-strong:text-[#1A1A1A]
                             prose-ul:text-muted-foreground prose-li:text-muted-foreground
+                            prose-ol:text-muted-foreground
                             prose-code:bg-gray-100 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-sm
                             prose-pre:bg-gray-50 prose-pre:border prose-pre:border-gray-200
+                            prose-table:text-sm prose-th:bg-gray-50 prose-th:p-3 prose-td:p-3 prose-table:border prose-table:border-gray-200
                         "
                         dangerouslySetInnerHTML={{
-                            __html: parseMarkdown(content.content)
+                            __html: parseMarkdown(post.content)
                         }}
                     />
                 </article>
 
-                {/* Related guides */}
-                <section className="mt-16 pt-8 border-t border-gray-100">
-                    <h2 className="text-xl font-bold text-[#1A1A1A] mb-6">{t.relatedGuides}</h2>
-                    <div className="grid gap-4">
-                        {guideList.filter(s => s !== slug).map(otherSlug => {
-                            const otherGuide = guides[otherSlug];
-                            const otherContent = otherGuide[language] || otherGuide.en;
-                            return (
+                {/* Related Guides */}
+                {relatedGuideItems.length > 0 && (
+                    <section className="mt-16 pt-8 border-t border-gray-100">
+                        <h2 className="text-xl font-bold text-[#1A1A1A] mb-6">{t.relatedGuides}</h2>
+                        <div className="grid gap-4">
+                            {relatedGuideItems.map(guide => (
                                 <Link
-                                    key={otherSlug}
-                                    href={`/${language}/guides/${otherSlug}`}
+                                    key={guide.slug}
+                                    href={`/${language}/guides/${guide.slug}`}
                                     className="block p-4 bg-gray-50 rounded-lg border border-gray-100 hover:border-[#DA7756]/30 hover:bg-gray-50/80 transition-colors"
                                 >
-                                    <h3 className="font-bold text-[#1A1A1A] mb-1">{otherContent.title}</h3>
-                                    <p className="text-sm text-muted-foreground line-clamp-2">{otherContent.description}</p>
+                                    <h3 className="font-bold text-[#1A1A1A] mb-1">{guide.title}</h3>
+                                    <p className="text-sm text-muted-foreground line-clamp-2">{guide.description}</p>
                                 </Link>
-                            );
-                        })}
-                    </div>
-                </section>
+                            ))}
+                        </div>
+                    </section>
+                )}
+
+                {/* Related Posts */}
+                {relatedPosts.length > 0 && (
+                    <section className="mt-12 pt-8 border-t border-gray-100">
+                        <h2 className="text-xl font-bold text-[#1A1A1A] mb-6">{t.relatedPosts}</h2>
+                        <div className="grid gap-4">
+                            {relatedPosts.map(p => (
+                                <Link
+                                    key={p.slug}
+                                    href={`/${language}/blog/${p.slug}`}
+                                    className="block p-4 bg-gray-50 rounded-lg border border-gray-100 hover:border-[#DA7756]/30 hover:bg-gray-50/80 transition-colors"
+                                >
+                                    <h3 className="font-bold text-[#1A1A1A] mb-1">{p.title}</h3>
+                                    <p className="text-sm text-muted-foreground line-clamp-2">{p.description}</p>
+                                </Link>
+                            ))}
+                        </div>
+                    </section>
+                )}
 
                 {/* CTA */}
                 <section className="mt-12 p-8 bg-[#DA7756]/5 rounded-2xl border border-[#DA7756]/10 text-center">
@@ -153,20 +196,20 @@ export default async function GuidePage({ params }: PageProps) {
                 </section>
             </div>
 
-            {/* Article JSON-LD */}
+            {/* BlogPosting JSON-LD */}
             <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{
                     __html: JSON.stringify({
                         "@context": "https://schema.org",
-                        "@type": "Article",
-                        "headline": content.title,
-                        "description": content.description,
-                        "datePublished": content.lastUpdated,
-                        "dateModified": content.lastUpdated,
+                        "@type": "BlogPosting",
+                        "headline": post.title,
+                        "description": post.description,
+                        "datePublished": post.date,
+                        "dateModified": post.date,
                         "author": {
                             "@type": "Organization",
-                            "name": "Cite Checker",
+                            "name": post.author,
                         },
                         "publisher": {
                             "@type": "Organization",
@@ -175,9 +218,15 @@ export default async function GuidePage({ params }: PageProps) {
                         },
                         "mainEntityOfPage": {
                             "@type": "WebPage",
-                            "@id": `https://www.citechecker.app/${language}/guides/${slug}`,
+                            "@id": `https://www.citechecker.app/${language}/blog/${slug}`,
                         },
+                        "keywords": post.tags.join(", "),
                         "inLanguage": language,
+                        "isPartOf": {
+                            "@type": "Blog",
+                            "name": language === "ja" ? "Cite Checker ブログ" : "Cite Checker Blog",
+                            "url": `https://www.citechecker.app/${language}/blog`,
+                        },
                     }),
                 }}
             />
